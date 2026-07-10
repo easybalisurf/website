@@ -26,6 +26,8 @@
   a:hover{color:#8affe0}
   ::selection{background:#61FFD0;color:#08100d}
   input,select,textarea{font-family:'Inter',sans-serif}
+  input[type="date"]{color-scheme:dark}
+  input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(1) brightness(1.3);cursor:pointer}
   @keyframes floatUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
   @keyframes slowZoom{from{transform:scale(1.08)}to{transform:scale(1)}}
   @keyframes marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
@@ -373,28 +375,61 @@
               </label>
             </div>
             <div class="form-2col" style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px">
-              <label style="{{ fieldLabel }}">{{ t.book.fDate }}
-                <input required="" type="date" value="{{ form.date }}" onInput="{{ onDate }}" onBlur="{{ onDate }}" style="{{ dateInputStyle }}">
-                <sc-if value="{{ dateErr }}" hint-placeholder-val="{{ false }}"><span style="display:flex;align-items:center;gap:6px;font-size:12px;color:#FFB454;margin-top:7px;font-weight:400;text-transform:none;letter-spacing:0"><span style="width:4px;height:4px;border-radius:50%;background:#FFB454;flex:none"></span>{{ dateErr }}</span></sc-if>
+              <label style="{{ fieldLabel }}">{{ t.book.fSessions }}
+                <select value="{{ form.sessionCount }}" onChange="{{ onSessionCount }}" style="{{ selectStyle }}">
+                  <sc-for list="{{ sessionCountOpts }}" as="o" hint-placeholder-count="5"><option style="color:#000">{{ o }}</option></sc-for>
+                </select>
               </label>
               <label style="{{ fieldLabel }}">{{ t.book.fPeople }}
                 <select value="{{ form.people }}" onChange="{{ onPeople }}" style="{{ selectStyle }}">
                   <option style="color:#000">1</option>
                   <option style="color:#000">2</option>
                   <option style="color:#000">3</option>
-                  <option style="color:#000">4+</option>
                 </select>
               </label>
             </div>
-            <div class="form-2col" style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px">
-              <label style="{{ fieldLabel }}">{{ t.book.fSpot }}
-                <input value="{{ form.spot }}" onInput="{{ onSpotField }}" placeholder="—" style="{{ inputStyle }}">
-              </label>
-              <label style="{{ fieldLabel }}">{{ t.book.fSlot }}
-                <input value="{{ form.slot }}" onInput="{{ onSlotField }}" placeholder="—" style="{{ inputStyle }}">
-              </label>
+            <label style="{{ fieldLabel }};margin-top:16px">{{ t.book.fSpot }}
+              <select value="{{ form.spot }}" onChange="{{ onSpotField }}" style="{{ selectStyle }}">
+                <sc-for list="{{ spotPool }}" as="o" hint-placeholder-count="3"><option style="color:#000">{{ o }}</option></sc-for>
+              </select>
+            </label>
+            <div style="display:flex;flex-direction:column;gap:14px;margin-top:16px">
+              <sc-for list="{{ sessionRows }}" as="row" hint-placeholder-count="1">
+                <div style="padding:14px;border-radius:14px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08)">
+                  <div style="font-size:12px;font-weight:600;letter-spacing:.4px;text-transform:uppercase;color:#61FFD0;margin-bottom:10px">{{ row.label }}</div>
+                  <div class="form-2col" style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+                    <label style="{{ fieldLabel }}">{{ t.book.fDate }}
+                      <input required="" type="date" value="{{ row.date }}" onInput="{{ row.onDate }}" onBlur="{{ row.onDate }}" style="{{ row.dateInputStyle }}">
+                      <sc-if value="{{ row.err }}" hint-placeholder-val="{{ false }}"><span style="display:flex;align-items:center;gap:6px;font-size:12px;color:#FFB454;margin-top:7px;font-weight:400;text-transform:none;letter-spacing:0"><span style="width:4px;height:4px;border-radius:50%;background:#FFB454;flex:none"></span>{{ row.err }}</span></sc-if>
+                    </label>
+                    <label style="{{ fieldLabel }}">{{ t.book.fSlot }}
+                      <select required="" value="{{ row.slot }}" onChange="{{ row.onSlot }}" style="{{ row.slotSelectStyle }}">
+                        <option value="" style="color:#000">—</option>
+                        <sc-for list="{{ row.slotOptions }}" as="opt" hint-placeholder-count="4">
+                          <option value="{{ opt.value }}" disabled="{{ opt.taken }}" style="color:#000">{{ opt.value }}</option>
+                        </sc-for>
+                      </select>
+                      <sc-if value="{{ row.slotErr }}" hint-placeholder-val="{{ false }}"><span style="display:flex;align-items:center;gap:6px;font-size:12px;color:#FFB454;margin-top:7px;font-weight:400;text-transform:none;letter-spacing:0"><span style="width:4px;height:4px;border-radius:50%;background:#FFB454;flex:none"></span>{{ row.slotErr }}</span></sc-if>
+                    </label>
+                  </div>
+                </div>
+              </sc-for>
             </div>
-            <button type="button" onClick="{{ next }}" style="{{ nextBtn }};margin-top:24px">{{ w.next }} →</button>
+            <div style="margin-top:22px;padding:18px;border-radius:16px;background:rgba(97,255,208,.07);border:1px solid rgba(97,255,208,.25)">
+              <div style="font-size:12px;letter-spacing:.5px;text-transform:uppercase;color:#61FFD0;font-weight:600;margin-bottom:14px">{{ w.summaryTitle }}</div>
+              <div style="display:flex;flex-direction:column;gap:9px">
+                <sc-for list="{{ summary }}" as="li" hint-placeholder-count="1">
+                  <div style="display:flex;justify-content:space-between;gap:12px;font-size:14px;color:#FFFFFFCC">
+                    <span>{{ li.label }}</span><span style="color:#fff;white-space:nowrap;font-weight:500">{{ li.amount }}</span>
+                  </div>
+                </sc-for>
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-top:14px;padding-top:14px;border-top:1px solid rgba(255,255,255,.12)">
+                <span style="font-size:13px;letter-spacing:.4px;text-transform:uppercase;color:#FFFFFF99">{{ w.total }}</span>
+                <span style="font-family:'Antonio',sans-serif;font-weight:700;font-size:36px;color:#fff;line-height:1">{{ orderTotal }}</span>
+              </div>
+            </div>
+            <button type="button" onClick="{{ next }}" style="{{ nextBtn }};margin-top:20px">{{ w.next }} →</button>
           </div>
         </sc-if>
 
@@ -402,15 +437,10 @@
         <sc-if value="{{ isStep2 }}" hint-placeholder-val="{{ false }}">
           <div>
             <div style="display:flex;flex-direction:column;gap:12px">
-              <div onClick="{{ togglePhoto }}" style="{{ aPhoto.row }}">
-                <span style="{{ aPhoto.box }}">{{ aPhoto.mark }}</span>
-                <span style="flex:1;font-size:15px;color:#fff">{{ w.photo }}</span>
-                <span style="{{ addonPrice }}">$200</span>
-              </div>
-              <div onClick="{{ toggleDrone }}" style="{{ aDrone.row }}">
-                <span style="{{ aDrone.box }}">{{ aDrone.mark }}</span>
-                <span style="flex:1;font-size:15px;color:#fff">{{ w.drone }}</span>
-                <span style="{{ addonPrice }}">$200</span>
+              <div onClick="{{ toggleMedia }}" style="{{ aMedia.row }}">
+                <span style="{{ aMedia.box }}">{{ aMedia.mark }}</span>
+                <span style="flex:1;font-size:15px;color:#fff">{{ w.media }}</span>
+                <span style="{{ addonPrice }}">{{ mediaPrice }}</span>
               </div>
               <div>
                 <div onClick="{{ toggleRental }}" style="{{ aRental.row }}">
@@ -528,7 +558,7 @@
               <button type="button" onClick="{{ back }}" style="{{ backBtn }}">← {{ w.back }}</button>
               <button type="submit" style="{{ nextBtn }}">{{ t.book.submit }}</button>
             </div>
-            <p style="font-size:12px;text-align:center;margin:14px 0 0;color:#FFFFFF80">{{ t.book.fine }}</p>
+            <p style="font-size:12px;text-align:center;margin:14px 0 0;color:#FFFFFF80">{{ t.book.fineA }}<a href="terms-of-service.html" style="color:#61FFD0">{{ t.book.fineLink }}</a>{{ t.book.fineB }}</p>
           </div>
         </sc-if>
       </form>
@@ -584,16 +614,32 @@ class Component extends DCLogic {
     wx: {},
     explore: { sport: 0, level: 0, date: '', spot: '', slot: '' },
     step: 1,
-    addons: { photo:false, drone:false, rental:false, transferTo:false, transferBack:false },
+    addons: { media:false, rental:false, transferTo:false, transferBack:false },
     rentalQty: 1,
     transferToFrom: '', transferBackFrom: '',
-    form: { name:'', email:'', phone:'', age:'', sport:'', level:'', date:'', people:'1', note:'', spot:'', slot:'' },
-    touched: { email:false, phone:false, age:false, date:false }
+    form: { name:'', email:'', phone:'', age:'', sport:'', level:'', sessionCount:'1', sessions:[{date:'',slot:''}], people:'1', note:'', spot:'' },
+    touched: { email:false, phone:false, age:false, dateAt:{}, slotAt:{} }
   };
 
   // ============================================================
   // VALIDATION (booking form, step 3)
   // ============================================================
+  // Grow/shrink the per-session date+slot rows to match the chosen session count, keeping already-filled rows.
+  ensureSessions(n) {
+    this.setState(s => {
+      const cur = s.form.sessions || [];
+      const next = [];
+      for (let i = 0; i < n; i++) next.push(cur[i] || { date: '', slot: '' });
+      return { form: { ...s.form, sessions: next } };
+    });
+  }
+  setSessionField(i, key, val) {
+    this.setState(s => {
+      const sessions = (s.form.sessions || []).slice();
+      sessions[i] = { ...(sessions[i] || { date:'', slot:'' }), [key]: val };
+      return { form: { ...s.form, sessions } };
+    });
+  }
   validEmail(v) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test((v||'').trim()); }
   validPhone(v) { const d = (v||'').replace(/[^\d]/g,''); return /^\+?[\d\s()-]{6,}$/.test((v||'').trim()) && d.length >= 8 && d.length <= 15; }
   validAge(v) { if (v === '' || v == null) return false; const n = Number(v); return Number.isInteger(n) && n >= 6 && n <= 99; }
@@ -774,8 +820,8 @@ class Component extends DCLogic {
   buildReco(sportIdx, levelIdx, dateStr, sm, chosenSpot, chosenSlot, wx, locale) {
     const { primary, pool, sportKey } = this.orderedSpots(sportIdx, levelIdx, dateStr);
     const active = pool.find(s => s.name === chosenSpot) || primary;
-    const baseSlots = ['05:45 – 07:30', '07:30 – 09:30', '15:30 – 17:30'];
-    const hoursH = ['06', '08', '16'];
+    const baseSlots = ['08:00 – 10:00', '10:00 – 12:00', '12:00 – 14:00', '14:00 – 16:00'];
+    const hoursH = ['08', '10', '12', '14'];
     const levelCenter = sportKey === 'surf' ? [0.7, 1.0, 1.4, 2.0][levelIdx] : 0.5;
     const sf = active.shore;
     const spotSeed = (() => { let h = 0; const n = active.name; for (let i = 0; i < n.length; i++) h = (h * 31 + n.charCodeAt(i)) >>> 0; return h; })();
@@ -815,7 +861,7 @@ class Component extends DCLogic {
       const rnd = this.seededRnd(this.seedFromDate(date) + spotSeed);
       const month = new Date(date + 'T00:00:00').getMonth();
       const dry = month >= 3 && month <= 9;
-      const windSeq = dry ? [0, 1, 2] : [3, 0, 1];
+      const windSeq = dry ? [0, 1, 2, 1] : [3, 0, 1, 2];
       const trot = Math.floor(rnd() * 3);
       const base = sportKey === 'surf' ? 0.8 : 0.3;
       const rng = sportKey === 'surf' ? 1.5 : 0.6;
@@ -832,7 +878,7 @@ class Component extends DCLogic {
     const md = getDay(targetDate);
     const per = md.per, sst = md.sst, live = md.live;
 
-    const dotC = ['#61FFD0', '#bfffe9', '#6f8a80'];
+    const dotC = ['#61FFD0', '#bfffe9', '#a3b3ac', '#6f8a80'];
     // 7-day strip
     const week = [];
     for (let k = 0; k < 7; k++) {
@@ -857,10 +903,10 @@ class Component extends DCLogic {
 
     const order = per.map((p, i) => ({ i, s: p.score })).sort((a, b) => b.s - a.s);
     const rankOf = {}; order.forEach((o, r) => { rankOf[o.i] = r; });
-    const badgeBg = ['rgba(97,255,208,.18)', 'rgba(255,255,255,.1)', 'rgba(255,255,255,.06)'];
-    const badgeFg = ['#61FFD0', '#ffffff', '#FFFFFFBD'];
+    const badgeBg = ['rgba(97,255,208,.18)', 'rgba(255,255,255,.1)', 'rgba(255,255,255,.07)', 'rgba(255,255,255,.05)'];
+    const badgeFg = ['#61FFD0', '#ffffff', '#FFFFFFBD', '#FFFFFF80'];
 
-    const slotEnd = [7.5, 9.5, 17.5]; // end hour of each base window
+    const slotEnd = [10, 12, 14, 16]; // end hour of each base window
     let slots = baseSlots.map((time, i) => {
       const qi = rankOf[i];
       return {
@@ -934,8 +980,7 @@ class Component extends DCLogic {
     const glassPanel = "background:linear-gradient(135deg,rgba(255,255,255,.06),rgba(255,255,255,.015));backdrop-filter:blur(18px) saturate(140%);-webkit-backdrop-filter:blur(18px) saturate(140%);border:1px solid rgba(255,255,255,.14);border-radius:18px;box-shadow:0 10px 40px rgba(0,0,0,.3),inset 0 1px 0 rgba(255,255,255,.18)";
 
     const LANGS = [
-      { c:'en', n:'English' }, { c:'ru', n:'Русский' }, { c:'zh', n:'中文' },
-      { c:'ko', n:'한국어' }, { c:'fr', n:'Français' }, { c:'de', n:'Deutsch' }, { c:'es', n:'Español' }
+      { c:'en', n:'English' }, { c:'ru', n:'Русский' }
     ];
     const menuItem = (a) => "display:block;width:100%;text-align:left;background:" + (a ? 'rgba(97,255,208,.16)' : 'transparent') + ";color:" + (a ? '#61FFD0' : '#fff') + ";border:none;border-radius:10px;cursor:pointer;font-family:'Inter';font-size:14px;font-weight:500;padding:10px 14px;transition:background .15s";
     const chip = (a) => "background:" + (a ? '#61FFD0' : 'transparent') + ";color:" + (a ? '#08100d' : '#fff') + ";border:1px solid " + (a ? '#61FFD0' : 'rgba(255,255,255,.25)') + ";border-radius:100px;padding:8px 15px;font-size:14px;font-weight:600;cursor:pointer";
@@ -954,7 +999,7 @@ class Component extends DCLogic {
     const bookThis = () => {
       const dt = /^\d{4}-\d{2}-\d{2}$/.test(ex.date) ? ex.date : this.todayStr();
       const slot = ex.slot || (reco.slots[0] && reco.slots[0].time) || '';
-      this.setState(s => ({ step: 1, form: { ...s.form, sport: L.book.sportOpts[ex.sport], level: L.book.levelOpts[ex.level], date: dt, spot: reco.active.name, slot } }));
+      this.setState(s => ({ step: 1, form: { ...s.form, sport: L.book.sportOpts[ex.sport], level: L.book.levelOpts[ex.level], sessionCount: '1', sessions: [{ date: dt, slot }], spot: reco.active.name } }));
       const el = document.getElementById('book'); if (el) window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - 20, behavior: 'smooth' });
     };
 
@@ -965,13 +1010,24 @@ class Component extends DCLogic {
     const disciplineKeys = ['surf','kite','wing','sup'];
     let sIdx = L.book.sportOpts.indexOf(f.sport);
     if (sIdx < 0) sIdx = 0;
+    const discKey = disciplineKeys[sIdx];
     const headcount = parseInt(f.people, 10) || 1; // "4+" -> 4
     const SVC = window.SERVICES_DATA;
-    const pricing = SVC.sessionPricing[disciplineKeys[sIdx]];
-    const priceEst = '$' + (pricing.base * headcount);
+    let lvlIdx = L.book.levelOpts.indexOf(f.level); if (lvlIdx < 0) lvlIdx = 0;
+    const isAdvanced = discKey === 'surf' && lvlIdx === 3;
+    const tier = discKey === 'surf' ? (isAdvanced ? SVC.sessionPricing.surf.advanced : SVC.sessionPricing.surf.standard) : SVC.sessionPricing[discKey];
+    const equipTier = discKey === 'surf' ? SVC.sessionPricing.surf.standard : SVC.sessionPricing[discKey]; // rental/deposit always on the standard tier
+    const sessionsCount = Math.min(5, Math.max(1, parseInt(f.sessionCount, 10) || 1));
+    const pm = SVC.packageMultipliers[isAdvanced ? 'advanced' : 'standard'];
+    const baseMult = 1 - pm.baseRate * (sessionsCount - 1);
+    const extraMult = 1 - pm.extraRate * (sessionsCount - 1);
+    const perSessionBase = Math.round(tier.base * baseMult);
+    const perSessionExtra = Math.round(tier.extraPerson * extraMult);
+    const pricing = tier; // kept for legacy readers below
+    const priceEst = '$' + (perSessionBase + perSessionExtra * (headcount - 1));
     const priceNote = L.book.priceCalc
       .replace('{n}', headcount)
-      .replace('{p}', '$' + pricing.base);
+      .replace('{p}', '$' + tier.base);
 
     // ---- 3-step wizard ----
     const W = this.wizDict()[this.state.lang] || this.wizDict().en;
@@ -995,22 +1051,27 @@ class Component extends DCLogic {
       };
     });
 
-    const transfersAvail = !!(f.spot && f.spot.trim() && f.slot && f.slot.trim());
+    const sessions = f.sessions || [{date:'',slot:''}];
+    const firstSlotted = sessions.find(s => s.slot);
+    const transfersAvail = !!(f.spot && f.spot.trim() && firstSlotted);
     const destName = f.spot || reco.active.name;
-    const ttNum = transfersAvail && ad.transferTo && this.state.transferToFrom ? this.transferPrice(this.state.transferToFrom, destName) : 0;
-    const tbNum = transfersAvail && ad.transferBack && this.state.transferBackFrom ? this.transferPrice(this.state.transferBackFrom, destName) : 0;
-    const baseNum = pricing.base * headcount;
-    const rentalRate = pricing.rental;
+    const ttOne = transfersAvail && ad.transferTo && this.state.transferToFrom ? this.transferPrice(this.state.transferToFrom, destName) : 0;
+    const tbOne = transfersAvail && ad.transferBack && this.state.transferBackFrom ? this.transferPrice(this.state.transferBackFrom, destName) : 0;
+    const ttNum = ttOne * sessionsCount, tbNum = tbOne * sessionsCount;
+    const baseNum = perSessionBase * sessionsCount + perSessionExtra * sessionsCount * (headcount - 1);
+    const rentalRate = equipTier.rental;
     const rentalQty = Math.min(Math.max(1, this.state.rentalQty || 1), headcount);
-    const addP = ad.photo ? SVC.addonPricing.photoVideo : 0, addD = ad.drone ? SVC.addonPricing.drone : 0, addR = ad.rental ? rentalRate * rentalQty : 0;
-    const totalNum = baseNum + addP + addD + addR + ttNum + tbNum;
+    const addM = ad.media ? SVC.addonPricing.media * sessionsCount : 0, addR = ad.rental ? rentalRate * rentalQty * sessionsCount : 0;
+    const totalNum = baseNum + addM + addR + ttNum + tbNum;
     const sportName = f.sport || L.book.sportOpts[0];
-    const summary = [{ label: W.sessionLine + ' · ' + sportName + ' ×' + headcount, amount: '$' + baseNum }];
-    if (ad.photo) summary.push({ label: W.photo, amount: '$200' });
-    if (ad.drone) summary.push({ label: W.drone, amount: '$200' });
-    if (ad.rental) summary.push({ label: W.rental + ' ×' + rentalQty, amount: '$' + (rentalRate * rentalQty) });
-    if (transfersAvail && ad.transferTo && this.state.transferToFrom) summary.push({ label: W.transferTo + ' · ' + this.state.transferToFrom, amount: '$' + ttNum });
-    if (transfersAvail && ad.transferBack && this.state.transferBackFrom) summary.push({ label: W.transferBack + ' · ' + this.state.transferBackFrom, amount: '$' + tbNum });
+    const daySuffix = sessionsCount > 1 ? ' ×' + sessionsCount : '';
+    const sessionLabel = [W.private, sportName, W.sessionWord].filter(Boolean).join(' ')
+      + ' (' + (sessionsCount > 1 ? sessionsCount + 'x2h' : '2h') + ') x ' + headcount + ' ' + (headcount === 1 ? W.personWord : W.peopleWord);
+    const summary = [{ label: sessionLabel, amount: '$' + baseNum }];
+    if (ad.media) summary.push({ label: W.media + daySuffix, amount: '$' + addM });
+    if (ad.rental) summary.push({ label: W.rental + ' ' + rentalQty + ' ' + (rentalQty === 1 ? W.personWord : W.peopleWord) + ' ×' + sessionsCount + ' (2h)', amount: '$' + (rentalRate * rentalQty * sessionsCount) });
+    if (transfersAvail && ad.transferTo && this.state.transferToFrom) summary.push({ label: W.transferRoute.replace('{a}', this.state.transferToFrom).replace('{b}', destName) + (sessionsCount > 1 ? ' x' + sessionsCount : ''), amount: '$' + ttNum });
+    if (transfersAvail && ad.transferBack && this.state.transferBackFrom) summary.push({ label: W.transferRoute.replace('{a}', destName).replace('{b}', this.state.transferBackFrom) + (sessionsCount > 1 ? ' x' + sessionsCount : ''), amount: '$' + tbNum });
 
     return {
       t: L,
@@ -1047,6 +1108,7 @@ class Component extends DCLogic {
       reviewsLoop: [...L.rev.list, ...L.rev.list],
       sportOpts: L.book.sportOpts,
       levelOpts: L.book.levelOpts,
+      spotPool: this.orderedSpots(sIdx, lvlIdx, null).pool.map(s => s.name),
       reco, exSportVal, exLevelVal, onExSport, onExLevel, bookThis,
 
       faqs: L.faq.list.map((item, i) => {
@@ -1070,19 +1132,27 @@ class Component extends DCLogic {
       w: W, wizSteps, nextBtn, backBtn, addonPrice,
       isStep1: step === 1, isStep2: step === 2, isStep3: step === 3,
       next: () => {
-        if (this.state.step === 1 && !f.date) { this.setState(s => ({ touched: { ...s.touched, date: true } })); return; }
+        if (this.state.step === 1) {
+          const rows = f.sessions || [];
+          let missing = -1, missingSlot = -1;
+          for (let i = 0; i < sessionsCount; i++) {
+            if (!rows[i] || !rows[i].date) { missing = i; break; }
+            if (!rows[i].slot && missingSlot < 0) missingSlot = i;
+          }
+          if (missing >= 0) { this.setState(s => ({ touched: { ...s.touched, dateAt: { ...(s.touched.dateAt||{}), [missing]: true } } })); return; }
+          if (missingSlot >= 0) { this.setState(s => ({ touched: { ...s.touched, slotAt: { ...(s.touched.slotAt||{}), [missingSlot]: true } } })); return; }
+        }
         this.gotoStep(Math.min(3, this.state.step + 1));
       },
       back: () => this.gotoStep(Math.max(1, this.state.step - 1)),
-      aPhoto: addonStyle(ad.photo), aDrone: addonStyle(ad.drone), aRental: addonStyle(ad.rental),
+      aMedia: addonStyle(ad.media), aRental: addonStyle(ad.rental),
       aTT: addonStyle(ad.transferTo), aTB: addonStyle(ad.transferBack),
-      togglePhoto: () => this.setState(s => ({ addons: { ...s.addons, photo: !s.addons.photo } })),
-      toggleDrone: () => this.setState(s => ({ addons: { ...s.addons, drone: !s.addons.drone } })),
+      toggleMedia: () => this.setState(s => ({ addons: { ...s.addons, media: !s.addons.media } })),
       toggleRental: () => this.setState(s => ({ addons: { ...s.addons, rental: !s.addons.rental } })),
       rentalOpen: ad.rental, rentalQty,
       rentalQtyOpts: Array.from({ length: headcount }, (_, i) => i + 1),
       onRentalQty: e => this.setState({ rentalQty: parseInt(e.target.value, 10) || 1 }),
-      depositNote: (W.depositNote || '').replace('{amount}', '$' + pricing.deposit),
+      depositNote: (W.depositNote || '').replace('{amount}', '$' + equipTier.deposit),
       toggleTT: () => this.setState(s => ({ addons: { ...s.addons, transferTo: !s.addons.transferTo } })),
       toggleTB: () => this.setState(s => ({ addons: { ...s.addons, transferBack: !s.addons.transferBack } })),
       transfersAvail, noTransfers: !transfersAvail,
@@ -1092,6 +1162,7 @@ class Component extends DCLogic {
       onTBFrom: e => this.setState({ transferBackFrom: e.target.value }),
       transferOpts: Object.keys(this.transferOrigins()),
       rentalPrice: '$' + rentalRate,
+      mediaPrice: '$' + SVC.addonPricing.media + ' ' + W.perDay,
       ttPrice: ad.transferTo ? (this.state.transferToFrom ? '$' + ttNum : '—') : '',
       tbPrice: ad.transferBack ? (this.state.transferBackFrom ? '$' + tbNum : '—') : '',
       summary, orderTotal: '$' + totalNum,
@@ -1101,21 +1172,44 @@ class Component extends DCLogic {
       onEmail: e => { this.set('email', e.target.value); this.setState(s => ({ touched: { ...s.touched, email: true } })); },
       onPhone: e => { this.set('phone', e.target.value); this.setState(s => ({ touched: { ...s.touched, phone: true } })); },
       onAge: e => { this.set('age', e.target.value); this.setState(s => ({ touched: { ...s.touched, age: true } })); },
-      dateErr: (this.state.touched.date && !f.date) ? (W.errDate || 'Please choose a date') : '',
-      dateInputStyle: inputStyle + ((this.state.touched.date && !f.date) ? ';border-color:#FFB454;background:rgba(255,180,84,.07)' : ''),
+      sessionCountOpts: ['1','2','3','4','5'],
+      sessionRows: (() => {
+        const SLOTS = ['08:00 – 10:00', '10:00 – 12:00', '12:00 – 14:00', '14:00 – 16:00'];
+        const activeSessions = sessions.slice(0, sessionsCount);
+        return activeSessions.map((row, i) => {
+          const touchedRow = !!(this.state.touched.dateAt || {})[i];
+          const err = touchedRow && !row.date;
+          const touchedSlot = !!(this.state.touched.slotAt || {})[i];
+          const slotErr = touchedSlot && !row.slot;
+          return {
+            num: i + 1,
+            label: (W.sessionLine || 'Session') + ' ' + (i + 1),
+            date: row.date, slot: row.slot,
+            onDate: e => { this.setSessionField(i, 'date', e.target.value); this.setState(s => ({ touched: { ...s.touched, dateAt: { ...(s.touched.dateAt||{}), [i]: true } } })); },
+            onSlot: e => { this.setSessionField(i, 'slot', e.target.value); this.setState(s => ({ touched: { ...s.touched, slotAt: { ...(s.touched.slotAt||{}), [i]: true } } })); },
+            err: err ? (W.errDate || 'Please choose a date') : '',
+            dateInputStyle: inputStyle + (err ? ';border-color:#FFB454;background:rgba(255,180,84,.07)' : ''),
+            slotErr: slotErr ? (W.errSlot || 'Please choose a time window') : '',
+            slotSelectStyle: selectStyle + (slotErr ? ';border-color:#FFB454;background:rgba(255,180,84,.07)' : ''),
+            slotOptions: SLOTS.map(o => ({
+              value: o,
+              taken: !!(row.date && activeSessions.some((s, j) => j !== i && s.date === row.date && s.slot === o))
+            }))
+          };
+        });
+      })(),
       emailErr: (this.state.touched.email && !this.validEmail(f.email)) ? (W.errEmail || 'Enter a valid email') : '',
       phoneErr: (this.state.touched.phone && !this.validPhone(f.phone)) ? (W.errPhone || 'Enter a valid phone number') : '',
       ageErr: (this.state.touched.age && f.age !== '' && !this.validAge(f.age)) ? (W.errAge || 'Age must be between 6 and 99') : '',
       emailInputStyle: inputStyle + ((this.state.touched.email && !this.validEmail(f.email)) ? ';border-color:#FFB454;background:rgba(255,180,84,.07)' : ''),
       phoneInputStyle: inputStyle + ((this.state.touched.phone && !this.validPhone(f.phone)) ? ';border-color:#FFB454;background:rgba(255,180,84,.07)' : ''),
       ageInputStyle: inputStyle + ((this.state.touched.age && f.age !== '' && !this.validAge(f.age)) ? ';border-color:#FFB454;background:rgba(255,180,84,.07)' : ''),
-      onSport: e => this.set('sport', e.target.value),
-      onLevel: e => this.set('level', e.target.value),
-      onDate: e => { this.set('date', e.target.value); this.setState(s => ({ touched: { ...s.touched, date: true } })); },
+      onSport: e => this.setState(s => ({ form: { ...s.form, sport: e.target.value, spot: '' } })),
+      onLevel: e => this.setState(s => ({ form: { ...s.form, level: e.target.value, spot: '' } })),
+      onSessionCount: e => { const n = parseInt(e.target.value, 10) || 1; this.set('sessionCount', e.target.value); this.ensureSessions(n); },
       onPeople: e => this.set('people', e.target.value),
       onNote: e => this.set('note', e.target.value),
       onSpotField: e => this.set('spot', e.target.value),
-      onSlotField: e => this.set('slot', e.target.value),
       submit: e => {
         e.preventDefault();
         const okEmail = this.validEmail(f.email), okPhone = this.validPhone(f.phone), okAge = f.age === '' || this.validAge(f.age);
@@ -1123,7 +1217,7 @@ class Component extends DCLogic {
         this.setState({ submitted: true });
         const el = document.getElementById('book'); if (el) window.scrollTo({ top: el.offsetTop - 40, behavior: 'smooth' });
       },
-      reset: () => this.setState({ submitted: false, step: 1, addons: { photo:false, drone:false, rental:false, transferTo:false, transferBack:false }, transferToFrom:'', transferBackFrom:'' }),
+      reset: () => this.setState(s => ({ submitted: false, step: 1, addons: { media:false, rental:false, transferTo:false, transferBack:false }, transferToFrom:'', transferBackFrom:'', form: { ...s.form, sessionCount: '1', sessions: [{ date:'', slot:'' }] } })),
     };
   }
 }

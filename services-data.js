@@ -1,18 +1,32 @@
 // services-data.js — pricing & locations. Edit here to add service packages, change prices, or add surf spots — no other file needs to change.
 
 window.SERVICES_DATA = {
-  // Base price is per person for a 2-hour session; rental is per person per day.
-  // deposit = approx. refundable security deposit typically held per rented set (surfboard/kite rig/wing+board/SUP board), not charged upfront.
+  // Private lesson pricing — a 2-hour session for 1 person is the reference unit.
+  // base = price for rider #1; extraPerson = added price per additional rider in the same session/package.
+  // Surf has its own level-based tier (levelOpts index 3 = "Advanced") since advanced coaching costs more;
+  // other disciplines don't split by level so use a single tier.
+  // rental is per person per rental day; deposit = approx. refundable security deposit per rented set (not charged upfront).
   sessionPricing: {
-    surf: { base: 80,  rental: 20, deposit: 100 },
-    kite: { base: 140, rental: 45, deposit: 400 },
-    wing: { base: 160, rental: 40, deposit: 350 },
-    sup:  { base: 70,  rental: 15, deposit: 80 }
+    surf: {
+      standard: { base: 70, extraPerson: 50, rental: 20, deposit: 100 },
+      advanced: { base: 80, extraPerson: 60 }
+    },
+    kite: { base: 140, extraPerson: 100, rental: 45, deposit: 400 },
+    wing: { base: 160, extraPerson: 115, rental: 40, deposit: 350 },
+    sup:  { base: 70,  extraPerson: 50,  rental: 15, deposit: 80 }
   },
-  // Flat add-on fees (not scaled by headcount)
+  // Multi-session discount: price per session decreases linearly with each additional session (1–5 sessions).
+  // "standard" applies to every non-advanced booking (all disciplines); "advanced" is surf-only (levelOpts index 3).
+  // multiplier(n) = 1 - rate * (n - 1), applied to the single-session base/extraPerson price.
+  // Solved from: standard base 70→60/session at 3, →50/session at 5 (rate 1/14); extra 50→40 at 3, →30 at 5 (rate 0.1).
+  // Advanced base 80→70/session at 3, →60/session at 5 (rate 0.0625); extra 60→50 at 3, →40 at 5 (rate 1/12).
+  packageMultipliers: {
+    standard: { baseRate: 1/14, extraRate: 0.1 },
+    advanced: { baseRate: 0.0625, extraRate: 1/12 }
+  },
+  // Flat add-on fee per 2h session (not scaled by headcount) — combined photo + video + drone footage & edit
   addonPricing: {
-    photoVideo: 200,
-    drone: 200
+    media: 200
   },
   // Pick-up areas for transfers, with rough [lat, lon] — used to estimate transfer price vs. a destination spot
   transferOrigins: {
@@ -26,7 +40,8 @@ window.SERVICES_DATA = {
     'Kuta Reef': [-8.735, 115.160], 'Balangan': [-8.792, 115.122], 'Berawa': [-8.668, 115.135],
     'Medewi': [-8.435, 114.803], 'Uluwatu': [-8.815, 115.088], 'Padang Padang': [-8.808, 115.103],
     'Keramas': [-8.596, 115.331], 'Sanur Lagoon': [-8.703, 115.262], 'Nusa Lembongan': [-8.681, 115.447],
-    'Sanur Reef': [-8.712, 115.268], 'Tanjung Benoa': [-8.760, 115.222], 'Mushroom Bay': [-8.681, 115.446]
+    'Sanur Reef': [-8.712, 115.268], 'Tanjung Benoa': [-8.760, 115.222], 'Mushroom Bay': [-8.681, 115.446],
+    'Sanur Beach': [-8.687, 115.263]
   },
   // Spot pools per discipline. Surf is further split by level (0=first timer .. 3=advanced) since
   // beginner-friendly breaks differ from advanced reef breaks. Each entry: { lat, lon, shore, name, region }.
@@ -35,7 +50,8 @@ window.SERVICES_DATA = {
       0: [
         { lat:-8.717, lon:115.168, shore:245, name:'Kuta Beach',     region:'Kuta' },
         { lat:-8.657, lon:115.128, shore:250, name:'Batu Bolong',    region:'Canggu' },
-        { lat:-8.690, lon:115.157, shore:250, name:'Seminyak Beach', region:'Seminyak' }
+        { lat:-8.690, lon:115.157, shore:250, name:'Seminyak Beach', region:'Seminyak' },
+        { lat:-8.687, lon:115.263, shore:95,  name:'Sanur Beach',    region:'Sanur' }
       ],
       1: [
         { lat:-8.657, lon:115.128, shore:250, name:'Batu Bolong', region:'Canggu' },
