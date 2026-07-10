@@ -154,12 +154,12 @@
       <!-- discipline + level dropdowns -->
       <div style="display:flex;flex-wrap:wrap;gap:16px">
         <label style="{{ fieldLabel }};flex:1;min-width:190px">{{ t.book.fSport }}
-          <select value="{{ exSportVal }}" onChange="{{ onExSport }}" style="{{ inputStyle }}">
+          <select value="{{ exSportVal }}" onChange="{{ onExSport }}" style="{{ selectStyle }}">
             <sc-for list="{{ sportOpts }}" as="o" hint-placeholder-count="4"><option style="color:#000">{{ o }}</option></sc-for>
           </select>
         </label>
         <label style="{{ fieldLabel }};flex:1;min-width:190px">{{ t.book.fLevel }}
-          <select value="{{ exLevelVal }}" onChange="{{ onExLevel }}" style="{{ inputStyle }}">
+          <select value="{{ exLevelVal }}" onChange="{{ onExLevel }}" style="{{ selectStyle }}">
             <sc-for list="{{ levelOpts }}" as="o" hint-placeholder-count="4"><option style="color:#000">{{ o }}</option></sc-for>
           </select>
         </label>
@@ -326,7 +326,7 @@
 <!-- ============ BOOKING FORM ============ -->
 <section id="book" data-screen-label="Booking" style="position:relative;overflow:hidden">
   <div class="prlx" data-speed="0.09" style="position:absolute;inset:-14% 0;will-change:transform">
-    <x-import component-from-global-scope="image-slot" from="./image-slot.js" id="book-bg" shape="rect" fit="cover" src="https://images.unsplash.com/photo-1766548729712-0188b9114b63?fm=jpg&amp;q=78&amp;w=2200&amp;auto=format&amp;fit=crop&amp;ixlib=rb-4.1.0" credit="Photo by Venti Views on Unsplash" credit-href="https://unsplash.com/@ventiviews" placeholder="Drop an ocean/aerial photo" hint-size="100%,100%"></x-import>
+    <x-import component-from-global-scope="image-slot" from="./image-slot.js" id="book-bg" shape="rect" fit="cover" src="https://images.unsplash.com/photo-1541617219835-3689726fa8e7?fm=jpg&amp;q=78&amp;w=2200&amp;auto=format&amp;fit=crop&amp;ixlib=rb-4.1.0" credit="Photo by Jeremy Bishop on Unsplash" credit-href="https://unsplash.com/@jeremybishop" placeholder="Drop an ocean/aerial photo" hint-size="100%,100%"></x-import>
   </div>
   <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(10,14,13,.55) 0%,rgba(10,14,13,.6) 40%,rgba(10,14,13,.72) 100%);pointer-events:none"></div>
   <div class="wrap sec-pad book-grid" style="position:relative;max-width:1280px;margin:0 auto;padding:100px 32px;display:grid;grid-template-columns:1fr 1.05fr;gap:64px;align-items:center">
@@ -362,12 +362,12 @@
           <div>
             <div class="form-2col" style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
               <label style="{{ fieldLabel }}">{{ t.book.fSport }}
-                <select value="{{ form.sport }}" onChange="{{ onSport }}" style="{{ inputStyle }}">
+                <select value="{{ form.sport }}" onChange="{{ onSport }}" style="{{ selectStyle }}">
                   <sc-for list="{{ sportOpts }}" as="o" hint-placeholder-count="4"><option style="color:#000">{{ o }}</option></sc-for>
                 </select>
               </label>
               <label style="{{ fieldLabel }}">{{ t.book.fLevel }}
-                <select value="{{ form.level }}" onChange="{{ onLevel }}" style="{{ inputStyle }}">
+                <select value="{{ form.level }}" onChange="{{ onLevel }}" style="{{ selectStyle }}">
                   <sc-for list="{{ levelOpts }}" as="o" hint-placeholder-count="4"><option style="color:#000">{{ o }}</option></sc-for>
                 </select>
               </label>
@@ -378,7 +378,7 @@
                 <sc-if value="{{ dateErr }}" hint-placeholder-val="{{ false }}"><span style="display:flex;align-items:center;gap:6px;font-size:12px;color:#FFB454;margin-top:7px;font-weight:400;text-transform:none;letter-spacing:0"><span style="width:4px;height:4px;border-radius:50%;background:#FFB454;flex:none"></span>{{ dateErr }}</span></sc-if>
               </label>
               <label style="{{ fieldLabel }}">{{ t.book.fPeople }}
-                <select value="{{ form.people }}" onChange="{{ onPeople }}" style="{{ inputStyle }}">
+                <select value="{{ form.people }}" onChange="{{ onPeople }}" style="{{ selectStyle }}">
                   <option style="color:#000">1</option>
                   <option style="color:#000">2</option>
                   <option style="color:#000">3</option>
@@ -437,7 +437,7 @@
                 </div>
                 <sc-if value="{{ ttOpen }}" hint-placeholder-val="{{ false }}">
                   <label style="{{ fieldLabel }};margin-top:10px">{{ w.fromLabel }}
-                    <select value="{{ ttFrom }}" onChange="{{ onTTFrom }}" style="{{ inputStyle }}">
+                    <select value="{{ ttFrom }}" onChange="{{ onTTFrom }}" style="{{ selectStyle }}">
                       <option value="" style="color:#000">{{ w.fromPlaceholder }}</option>
                       <sc-for list="{{ transferOpts }}" as="o" hint-placeholder-count="6"><option style="color:#000">{{ o }}</option></sc-for>
                     </select>
@@ -452,7 +452,7 @@
                 </div>
                 <sc-if value="{{ tbOpen }}" hint-placeholder-val="{{ false }}">
                   <label style="{{ fieldLabel }};margin-top:10px">{{ w.dropLabel }}
-                    <select value="{{ tbFrom }}" onChange="{{ onTBFrom }}" style="{{ inputStyle }}">
+                    <select value="{{ tbFrom }}" onChange="{{ onTBFrom }}" style="{{ selectStyle }}">
                       <option value="" style="color:#000">{{ w.fromPlaceholder }}</option>
                       <sc-for list="{{ transferOpts }}" as="o" hint-placeholder-count="6"><option style="color:#000">{{ o }}</option></sc-for>
                     </select>
@@ -924,7 +924,8 @@ class Component extends DCLogic {
     const f = this.state.form;
     const subhead = "font-family:'Inter',sans-serif;color:#61FFD0;font-size:14px;font-weight:500;letter-spacing:.4px;text-transform:uppercase;margin:0;text-shadow:0 1px 4px rgba(0,0,0,.55)";
     const h2Style = "font-family:'Antonio',sans-serif;font-weight:700;font-size:clamp(34px,4.5vw,62px);line-height:.98;letter-spacing:-.5px;color:#fff;margin:12px 0 0;max-width:16ch";
-    const inputStyle = "width:100%;margin-top:8px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.16);border-radius:12px;padding:13px 15px;color:#fff;font-size:15px;outline:none";
+    const inputStyle = "width:100%;margin-top:8px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.16);border-radius:12px;padding:13px 15px;color:#fff;font-family:'Inter',sans-serif;font-size:15px;line-height:1.4;outline:none";
+    const selectStyle = inputStyle + ";-webkit-appearance:none;appearance:none;background-image:url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='7' viewBox='0 0 11 7'%3E%3Cpath d='M1 1l4.5 4.5L10 1' stroke='%2361FFD0' stroke-width='1.6' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E\");background-repeat:no-repeat;background-position:right 15px center;padding-right:36px";
     const fieldLabel = "display:block;font-size:13px;letter-spacing:.4px;color:#61FFD0;text-transform:uppercase;font-weight:500";
     const footHead = "font-size:12px;letter-spacing:.6px;text-transform:uppercase;color:#61FFD0;margin-bottom:16px;font-weight:600";
     const footLink = "display:block;font-size:14px;color:#FFFFFFBD;margin-bottom:11px";
@@ -1016,7 +1017,7 @@ class Component extends DCLogic {
       navStyle: (this.state.scrolled || this.state.menuOpen)
         ? "position:fixed;top:0;left:0;right:0;z-index:70;background:linear-gradient(180deg,rgba(8,14,13,.72),rgba(8,14,13,.5));backdrop-filter:blur(20px) saturate(160%);-webkit-backdrop-filter:blur(20px) saturate(160%);border-bottom:1px solid rgba(255,255,255,.12);box-shadow:0 8px 40px rgba(0,0,0,.25),inset 0 1px 0 rgba(255,255,255,.16);transition:all .35s"
         : "position:fixed;top:0;left:0;right:0;z-index:70;background:transparent;border-bottom:1px solid transparent;transition:all .35s",
-      eyebrow: subhead, subhead, h2Style, inputStyle, fieldLabel, footHead, footLink, glassCard, glassPanel,
+      eyebrow: subhead, subhead, h2Style, inputStyle, selectStyle, fieldLabel, footHead, footLink, glassCard, glassPanel,
 
       curLangName: (LANGS.find(l => l.c === this.state.lang) || LANGS[0]).n,
       langBtnStyle: "display:flex;align-items:center;gap:7px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.2);border-radius:100px;color:#fff;font-family:'Inter';font-size:13px;font-weight:500;padding:9px 14px;cursor:pointer;transition:all .2s",
