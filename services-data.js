@@ -2,11 +2,12 @@
 
 window.SERVICES_DATA = {
   // Base price is per person for a 2-hour session; rental is per person per day.
+  // deposit = approx. refundable security deposit typically held per rented set (surfboard/kite rig/wing+board/SUP board), not charged upfront.
   sessionPricing: {
-    surf: { base: 80,  rental: 20 },
-    kite: { base: 140, rental: 45 },
-    wing: { base: 160, rental: 40 },
-    sup:  { base: 70,  rental: 15 }
+    surf: { base: 80,  rental: 20, deposit: 100 },
+    kite: { base: 140, rental: 45, deposit: 400 },
+    wing: { base: 160, rental: 40, deposit: 350 },
+    sup:  { base: 70,  rental: 15, deposit: 80 }
   },
   // Flat add-on fees (not scaled by headcount)
   addonPricing: {

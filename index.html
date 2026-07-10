@@ -7,6 +7,7 @@
 </head>
 <body>
 <x-dc>
+
 <helmet>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
@@ -33,7 +34,8 @@
   @keyframes sheen{0%{transform:translateX(-120%)}60%,100%{transform:translateX(220%)}}
   @keyframes logoWave{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
   .logo-mark{display:inline-flex}
-  .logo-char{display:inline-block;animation:logoWave 2.6s ease-in-out infinite}
+  .logo-char{display:inline-block}
+  .hero-char{display:inline-block;animation:logoWave 2.6s ease-in-out infinite}
   .nav-burger{display:none}
   @media(max-width:880px){
     .nav-desktop{display:none!important}
@@ -61,7 +63,7 @@
 <nav data-screen-label="Nav" style="{{ navStyle }}">
   <div class="wrap" style="max-width:1280px;margin:0 auto;padding:0 32px;height:74px;display:flex;align-items:center;justify-content:space-between">
     <a href="#hero" style="display:flex;align-items:center;color:#fff">
-      <span class="logo-mark" style="font-family:'Antonio',sans-serif;font-weight:700;font-size:24px;letter-spacing:2px">
+      <span class="logo-mark" style="font-family:'Audiowide',sans-serif;font-weight:400;font-size:20px;letter-spacing:.5px">
         <sc-for list="{{ logoChars }}" as="lc" hint-placeholder-count="13"><span class="logo-char" style="{{ lc.style }}">{{ lc.ch }}</span></sc-for>
       </span>
     </a>
@@ -69,7 +71,6 @@
     <!-- desktop nav -->
     <div class="nav-desktop" style="display:flex;align-items:center;gap:28px">
       <a href="#forecast" style="color:#FFFFFFBD;font-size:14px;font-weight:500">{{ t.nav.forecast }}</a>
-      <a href="#sports" style="color:#FFFFFFBD;font-size:14px;font-weight:500">{{ t.nav.disciplines }}</a>
       <a href="#why" style="color:#FFFFFFBD;font-size:14px;font-weight:500">{{ t.nav.why }}</a>
       <a href="#how" style="color:#FFFFFFBD;font-size:14px;font-weight:500">{{ t.nav.how }}</a>
 
@@ -102,7 +103,6 @@
 <div style="{{ drawerStyle }}">
   <div style="display:flex;flex-direction:column;gap:8px;padding:0 26px;width:100%;max-width:420px">
     <a href="#forecast" onClick="{{ closeMenu }}" style="{{ drawerLink }}">{{ t.nav.forecast }}</a>
-    <a href="#sports" onClick="{{ closeMenu }}" style="{{ drawerLink }}">{{ t.nav.disciplines }}</a>
     <a href="#why" onClick="{{ closeMenu }}" style="{{ drawerLink }}">{{ t.nav.why }}</a>
     <a href="#how" onClick="{{ closeMenu }}" style="{{ drawerLink }}">{{ t.nav.how }}</a>
     <a href="#faq" onClick="{{ closeMenu }}" style="{{ drawerLink }}">FAQ</a>
@@ -119,7 +119,7 @@
 <header id="hero" data-screen-label="Hero" style="position:relative;min-height:100vh;display:flex;align-items:flex-end;overflow:hidden">
   <div id="heroBgLayer" class="prlx" data-speed="0.14" style="position:absolute;inset:-14% 0;will-change:transform">
     <div style="position:absolute;inset:0;animation:slowZoom 2.4s ease-out both">
-      <x-import component-from-global-scope="image-slot" from="./image-slot.js" id="hero-bg" shape="rect" fit="cover" src="https://images.unsplash.com/photo-1766548729712-0188b9114b63?fm=jpg&amp;q=78&amp;w=2400&amp;auto=format&amp;fit=crop&amp;ixlib=rb-4.1.0" credit="Photo by Venti Views on Unsplash" credit-href="https://unsplash.com/@ventiviews" placeholder="Drop a wide surf/ocean photo" hint-size="100%,100%"></x-import>
+      <x-import component-from-global-scope="image-slot" from="./image-slot.js" id="hero-bg" shape="rect" fit="cover" src="https://images.unsplash.com/photo-1762705402471-8f0cf07d694f?fm=jpg&amp;q=78&amp;w=2400&amp;auto=format&amp;fit=crop&amp;ixlib=rb-4.1.0" credit="Photo by Thibault Mokuenko on Unsplash" credit-href="https://unsplash.com/@tmokuenko" placeholder="Drop a wide surf/ocean photo" hint-size="100%,100%"></x-import>
     <div style="position: absolute; inset: 0; background: linear-gradient(rgba(8, 14, 13, 0.6) 0%, rgba(8, 14, 13, 0.3) 38%, rgba(8, 14, 13, 0.8) 82%, rgb(10, 14, 13) 100%);"></div></div>
   </div>
   
@@ -128,24 +128,25 @@
       <p style="{{ eyebrow }}">{{ t.hero.eyebrow }}</p>
     </div>
     <h1 style="font-family:'Antonio',sans-serif;font-weight:700;font-size:clamp(44px,8vw,118px);line-height:.92;letter-spacing:-1px;color:#fff;margin:14px 0 0;max-width:15ch;animation:floatUp .9s .2s ease-out both">
-      {{ t.hero.h1a }}<span style="color:#61FFD0">{{ t.hero.h1accent }}</span>{{ t.hero.h1b }}
+      <sc-for list="{{ heroChars }}" as="hc" hint-placeholder-count="36"><span class="hero-char" style="{{ hc.style }}">{{ hc.ch }}</span></sc-for>
     </h1>
     <p style="max-width:52ch;font-size:clamp(15px,2.2vw,18px);line-height:1.6;color:#FFFFFFBD;margin:26px 0 0;animation:floatUp 1s .35s ease-out both">
       {{ t.hero.lead }}
     </p>
     <div style="display:flex;flex-wrap:wrap;gap:14px;margin-top:36px;pointer-events:auto;animation:floatUp 1.1s .5s ease-out both">
       <a href="#book" style="display:inline-flex;align-items:center;gap:9px;background:linear-gradient(120deg,#7DFFC4,#61FFD0 42%,#3FD9E6);color:#08100d;font-weight:600;font-size:15px;padding:16px 30px;border-radius:100px;transition:transform .2s,box-shadow .2s" style-hover="box-shadow:0 10px 40px rgba(97,255,208,.45);transform:translateY(-2px)">{{ t.hero.ctaBook }}</a>
-      <a href="#sports" style="display:inline-flex;align-items:center;gap:9px;border:1px solid rgba(255,255,255,.35);color:#fff;font-weight:500;font-size:15px;padding:16px 30px;border-radius:100px;transition:background .2s" style-hover="background:rgba(255,255,255,.1)">{{ t.hero.ctaExplore }}</a>
+      <a href="#why" style="display:inline-flex;align-items:center;gap:9px;border:1px solid rgba(255,255,255,.35);color:#fff;font-weight:500;font-size:15px;padding:16px 30px;border-radius:100px;transition:background .2s" style-hover="background:rgba(255,255,255,.1)">{{ t.hero.ctaExplore }}</a>
     </div>
   </div>
 </header>
 
 <!-- ============ SMART FORECAST / SPOT FINDER ============ -->
-<section id="forecast" data-screen-label="Forecast" style="background:#08100d;border-bottom:1px solid rgba(97,255,208,.12)">
+<section id="forecast" data-screen-label="Forecast" style="background:#0a0e0d">
   <div class="wrap sec-pad" style="max-width:960px;margin:0 auto;padding:100px 32px">
     <p style="{{ subhead }};text-align:center">{{ t.finder.sub }}</p>
     <h2 style="{{ h2Style }};text-align:center;margin:12px auto 0">{{ t.finder.h2 }}</h2>
     <p style="max-width:56ch;margin:18px auto 0;text-align:center;font-size:16px;line-height:1.6">{{ t.finder.lead }}</p>
+    <p style="text-align:center;margin:10px 0 0"><a href="surf-guide.html" style="font-size:14px;font-weight:500;color:#61FFD0">{{ t.finder.guideLink }} →</a></p>
 
     <!-- unified recommendation panel -->
     <div style="{{ glassPanel }};padding:28px;margin-top:40px">
@@ -228,39 +229,16 @@
 
       <div style="display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-top:22px;padding-top:20px;border-top:1px solid rgba(255,255,255,.1)">
         <p style="font-size:12px;line-height:1.5;color:#FFFFFF99;margin:0;max-width:44ch">{{ t.smart.note }}</p>
-        <button type="button" onClick="{{ bookThis }}" style="flex:none;background:linear-gradient(120deg,#7DFFC4,#61FFD0 42%,#3FD9E6);color:#08100d;font-weight:600;font-size:15px;padding:14px 26px;border:none;border-radius:100px;cursor:pointer;transition:transform .2s,box-shadow .2s" style-hover="box-shadow:0 10px 34px rgba(97,255,208,.4);transform:translateY(-1px)">{{ t.nav.book }}</button>
+        <button type="button" onClick="{{ bookThis }}" style="flex:none;background:linear-gradient(120deg,#7DFFC4,#61FFD0 42%,#3FD9E6);color:#08100d;font-weight:600;font-size:15px;padding:14px 26px;border:none;border-radius:100px;cursor:pointer;transition:transform .2s,box-shadow .2s" style-hover="box-shadow:0 10px 34px rgba(97,255,208,.4);transform:translateY(-1px)">{{ t.smart.bookBtn }}</button>
       </div>
     </div>
-  </div>
-</section>
-
-<!-- ============ SPORTS / DISCIPLINES ============ -->
-<section id="sports" data-screen-label="Disciplines" class="wrap sec-pad" style="max-width:1280px;margin:0 auto;padding:110px 32px 30px">
-  <p style="{{ subhead }}">{{ t.sports.sub }}</p>
-  <h2 style="{{ h2Style }}">{{ t.sports.h2 }}</h2>
-  <p style="max-width:56ch;font-size:17px;line-height:1.6;margin:18px 0 46px">{{ t.sports.lead }}</p>
-  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:20px">
-    <sc-for list="{{ sports }}" as="sp" hint-placeholder-count="4">
-      <div style="position:relative;height:420px;border-radius:18px;overflow:hidden;cursor:pointer;transition:transform .3s" style-hover="transform:translateY(-6px)">
-        <div style="position:absolute;inset:0">
-          <x-import component-from-global-scope="image-slot" from="./image-slot.js" id="{{ sp.slotId }}" shape="rect" fit="cover" src="{{ sp.img }}" credit="{{ sp.credit }}" credit-href="{{ sp.creditHref }}" placeholder="{{ sp.ph }}" hint-size="100%,100%"></x-import>
-        </div>
-        <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(8,14,13,.15) 20%,rgba(8,14,13,.92) 100%);pointer-events:none"></div>
-        <div style="position:absolute;left:0;right:0;bottom:0;padding:26px;pointer-events:none">
-          <p style="font-family:'Inter';color:#61FFD0;font-size:12px;letter-spacing:.4px;text-transform:uppercase;margin:0 0 8px;text-shadow:0 1px 4px rgba(0,0,0,.6)">{{ sp.level }}</p>
-          <h3 style="font-family:'Antonio',sans-serif;font-weight:600;font-size:32px;color:#fff;margin:0;line-height:1">{{ sp.name }}</h3>
-          <p style="font-size:14px;line-height:1.55;color:#FFFFFFBD;margin:10px 0 0">{{ sp.desc }}</p>
-          <p style="font-size:14px;color:#fff;margin:14px 0 0;font-weight:600">{{ sp.price }}</p>
-        </div>
-      </div>
-    </sc-for>
   </div>
 </section>
 
 <!-- ============ WHY US ============ -->
 <section id="why" data-screen-label="Why us" style="position:relative;margin-top:110px;overflow:hidden">
   <div class="prlx" data-speed="0.10" style="position:absolute;inset:-14% 0;will-change:transform">
-    <x-import component-from-global-scope="image-slot" from="./image-slot.js" id="why-bg" shape="rect" fit="cover" src="https://images.unsplash.com/photo-1772950399275-81eea958d92b?fm=jpg&amp;q=78&amp;w=2000&amp;auto=format&amp;fit=crop&amp;ixlib=rb-4.1.0" credit="Photo by Zetong Li on Unsplash" credit-href="https://unsplash.com/@zetong" placeholder="Drop a lifestyle / beach photo" hint-size="100%,100%"></x-import>
+    <x-import component-from-global-scope="image-slot" from="./image-slot.js" id="why-bg" shape="rect" fit="cover" src="https://images.unsplash.com/photo-1654137065487-cce388f2c58f?fm=jpg&amp;q=78&amp;w=2000&amp;auto=format&amp;fit=crop&amp;ixlib=rb-4.1.0" credit="Photo by David Gor on Unsplash" credit-href="https://unsplash.com/@davidgor" placeholder="Drop a lifestyle / beach photo" hint-size="100%,100%"></x-import>
   </div>
   <div style="position:absolute;inset:0;background:linear-gradient(90deg,#0a0e0d 0%,rgba(10,14,13,.86) 46%,rgba(10,14,13,.3) 100%);pointer-events:none"></div>
   <div class="wrap sec-pad" style="position:relative;max-width:1280px;margin:0 auto;padding:110px 32px">
@@ -283,14 +261,14 @@
 </section>
 
 <!-- ============ HOW IT WORKS ============ -->
-<section id="how" data-screen-label="How it works" style="background:#08100d;border-top:1px solid rgba(97,255,208,.12)">
+<section id="how" data-screen-label="How it works" style="background:#0a0e0d">
   <div class="wrap sec-pad" style="max-width:1280px;margin:0 auto;padding:100px 32px">
     <p style="{{ subhead }};text-align:center">{{ t.how.sub }}</p>
     <h2 style="{{ h2Style }};text-align:center;margin:12px auto 0">{{ t.how.h2 }}</h2>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:24px;margin-top:56px">
       <sc-for list="{{ steps }}" as="st" hint-placeholder-count="3">
-        <div style="position:relative;padding:34px 28px;border:1px solid rgba(97,255,208,.18);border-radius:18px;background:linear-gradient(180deg,rgba(97,255,208,.05),transparent)">
-          <div style="font-family:'Antonio',sans-serif;font-weight:700;font-size:64px;color:rgba(97,255,208,.28);line-height:.8">{{ st.n }}</div>
+        <div style="position:relative;padding:34px 28px;border:1px solid rgba(255,255,255,.12);border-radius:18px;background:rgba(255,255,255,.035);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)">
+          <div style="font-family:'Antonio',sans-serif;font-weight:700;font-size:64px;color:rgba(97,255,208,.32);line-height:.8">{{ st.n }}</div>
           <h4 style="font-family:'Antonio',sans-serif;font-weight:600;font-size:24px;color:#fff;margin:16px 0 8px;line-height:1.05">{{ st.title }}</h4>
           <p style="font-size:15px;line-height:1.6;margin:0">{{ st.body }}</p>
         </div>
@@ -307,7 +285,7 @@
     <sc-for list="{{ reviewsLoop }}" as="r" hint-placeholder-count="6">
       <div style="flex:none;width:340px;padding:30px;border:1px solid rgba(255,255,255,.1);border-radius:18px;background:rgba(255,255,255,.02)">
         <div style="color:#61FFD0;font-size:15px;letter-spacing:2px">★★★★★</div>
-        <p style="font-size:16px;line-height:1.6;color:#fff;margin:16px 0 20px">“{{ r.text }}”</p>
+        <p style="font-size:16px;line-height:1.6;color:#fff;margin:16px 0 20px">"{{ r.text }}"</p>
         <div style="display:flex;align-items:center;gap:12px">
           <span style="width:38px;height:38px;border-radius:50%;background:rgba(97,255,208,.15);border:1px solid rgba(97,255,208,.4);display:flex;align-items:center;justify-content:center;font-family:'Antonio';color:#61FFD0;font-weight:700">{{ r.init }}</span>
           <div>
@@ -321,13 +299,13 @@
 </section>
 
 <!-- ============ FAQ ============ -->
-<section id="faq" data-screen-label="FAQ" style="background:#08100d;border-top:1px solid rgba(97,255,208,.12)">
+<section id="faq" data-screen-label="FAQ" style="background:#0a0e0d">
   <div class="wrap sec-pad" style="max-width:900px;margin:0 auto;padding:100px 32px">
     <p style="{{ subhead }};text-align:center">{{ t.faq.sub }}</p>
     <h2 style="{{ h2Style }};text-align:center;margin:12px auto 48px">{{ t.faq.h2 }}</h2>
     <div style="display:flex;flex-direction:column;gap:14px">
       <sc-for list="{{ faqs }}" as="q" hint-placeholder-count="5">
-        <div style="border:1px solid rgba(97,255,208,.18);border-radius:16px;background:linear-gradient(180deg,rgba(97,255,208,.04),transparent);overflow:hidden">
+        <div style="border:1px solid rgba(255,255,255,.14);border-radius:16px;background:rgba(255,255,255,.045);backdrop-filter:blur(22px) saturate(150%);-webkit-backdrop-filter:blur(22px) saturate(150%);box-shadow:inset 0 1px 0 rgba(255,255,255,.12);overflow:hidden">
           <button onClick="{{ q.toggle }}" style="width:100%;display:flex;align-items:center;justify-content:space-between;gap:20px;background:transparent;border:none;cursor:pointer;text-align:left;padding:24px 26px;color:#fff;font-family:'Antonio',sans-serif;font-weight:600;font-size:20px;line-height:1.15">
             {{ q.question }}
             <span style="{{ q.iconStyle }}">+</span>
@@ -346,17 +324,12 @@
   <div class="prlx" data-speed="0.09" style="position:absolute;inset:-14% 0;will-change:transform">
     <x-import component-from-global-scope="image-slot" from="./image-slot.js" id="book-bg" shape="rect" fit="cover" src="https://images.unsplash.com/photo-1766548729712-0188b9114b63?fm=jpg&amp;q=78&amp;w=2200&amp;auto=format&amp;fit=crop&amp;ixlib=rb-4.1.0" credit="Photo by Venti Views on Unsplash" credit-href="https://unsplash.com/@ventiviews" placeholder="Drop an ocean/aerial photo" hint-size="100%,100%"></x-import>
   </div>
-  <div style="position:absolute;inset:0;background:linear-gradient(180deg,#0a0e0d 0%,rgba(10,14,13,.82) 40%,rgba(10,14,13,.9) 100%);pointer-events:none"></div>
+  <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(10,14,13,.55) 0%,rgba(10,14,13,.6) 40%,rgba(10,14,13,.72) 100%);pointer-events:none"></div>
   <div class="wrap sec-pad book-grid" style="position:relative;max-width:1280px;margin:0 auto;padding:100px 32px;display:grid;grid-template-columns:1fr 1.05fr;gap:64px;align-items:center">
     <div>
       <p style="{{ subhead }}">{{ t.book.sub }}</p>
       <h2 style="font-family:'Antonio',sans-serif;font-weight:700;font-size:clamp(36px,5vw,70px);line-height:.95;letter-spacing:-.5px;color:#fff;margin:12px 0 0">{{ t.book.h1a }}<br><span style="color:#61FFD0">{{ t.book.h1b }}</span></h2>
       <p style="font-size:17px;line-height:1.65;max-width:44ch;margin:24px 0 0">{{ t.book.lead }}</p>
-      <div class="hero-mini" style="display:flex;gap:30px;margin-top:36px;flex-wrap:wrap">
-        <div><div style="font-family:'Antonio';font-weight:600;font-size:30px;color:#61FFD0;line-height:1;text-transform:uppercase">{{ t.book.m1n }}</div><div style="font-size:13px;letter-spacing:.4px;text-transform:uppercase;margin-top:4px">{{ t.book.m1l }}</div></div>
-        <div><div style="font-family:'Antonio';font-weight:600;font-size:30px;color:#61FFD0;line-height:1;text-transform:uppercase">{{ t.book.m2n }}</div><div style="font-size:13px;letter-spacing:.4px;text-transform:uppercase;margin-top:4px">{{ t.book.m2l }}</div></div>
-        <div><div style="font-family:'Antonio';font-weight:600;font-size:30px;color:#61FFD0;line-height:1;text-transform:uppercase">{{ t.book.m3n }}</div><div style="font-size:13px;letter-spacing:.4px;text-transform:uppercase;margin-top:4px">{{ t.book.m3l }}</div></div>
-      </div>
     </div>
 
     <sc-if value="{{ submitted }}" hint-placeholder-val="{{ false }}">
@@ -435,10 +408,21 @@
                 <span style="flex:1;font-size:15px;color:#fff">{{ w.drone }}</span>
                 <span style="{{ addonPrice }}">$200</span>
               </div>
-              <div onClick="{{ toggleRental }}" style="{{ aRental.row }}">
-                <span style="{{ aRental.box }}">{{ aRental.mark }}</span>
-                <span style="flex:1;font-size:15px;color:#fff">{{ w.rental }}</span>
-                <span style="{{ addonPrice }}">{{ rentalPrice }} {{ w.perDay }}</span>
+              <div>
+                <div onClick="{{ toggleRental }}" style="{{ aRental.row }}">
+                  <span style="{{ aRental.box }}">{{ aRental.mark }}</span>
+                  <span style="flex:1;font-size:15px;color:#fff">{{ w.rental }}</span>
+                  <span style="{{ addonPrice }}">{{ rentalPrice }} {{ w.perDay }}</span>
+                </div>
+                <sc-if value="{{ rentalOpen }}" hint-placeholder-val="{{ false }}">
+                  <div style="display:flex;align-items:center;justify-content:space-between;gap:14px;margin-top:10px;padding:12px 14px;border-radius:12px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1)">
+                    <span style="font-size:13px;color:#FFFFFFBD">{{ w.rentalQty }}</span>
+                    <select value="{{ rentalQty }}" onChange="{{ onRentalQty }}" style="width:auto;margin:0;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.2);border-radius:10px;padding:8px 12px;color:#fff;font-size:14px;outline:none">
+                      <sc-for list="{{ rentalQtyOpts }}" as="n" hint-placeholder-count="4"><option style="color:#000">{{ n }}</option></sc-for>
+                    </select>
+                  </div>
+                  <p style="font-size:12px;line-height:1.5;color:#FFB454;margin:8px 2px 0">⚠ {{ depositNote }}</p>
+                </sc-if>
               </div>
               <sc-if value="{{ transfersAvail }}" hint-placeholder-val="{{ false }}">
               <div>
@@ -552,7 +536,7 @@
 <footer style="background:#08100d;border-top:1px solid rgba(97,255,208,.12)">
   <div class="wrap footer-grid" style="max-width:1280px;margin:0 auto;padding:64px 32px 40px;display:grid;grid-template-columns:1.6fr 1fr 1fr 1fr;gap:40px">
     <div>
-      <div class="logo-mark" style="font-family:'Antonio',sans-serif;font-weight:700;font-size:24px;letter-spacing:2px;transform-origin:0% 70%;width:max-content">
+      <div class="logo-mark" style="font-family:'Audiowide',sans-serif;font-weight:400;font-size:22px;letter-spacing:.5px;transform-origin:0% 70%;width:max-content">
         <sc-for list="{{ logoChars }}" as="lc" hint-placeholder-count="13"><span class="logo-char" style="{{ lc.style }}">{{ lc.ch }}</span></sc-for>
       </div>
       <p style="font-size:14px;line-height:1.6;margin:16px 0 0;max-width:34ch">{{ t.foot.tagline }}</p>
@@ -573,11 +557,13 @@
   </div>
   <div class="wrap" style="max-width:1280px;margin:0 auto;padding:0 32px 40px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;font-size:13px;color:#FFFFFF80;border-top:1px solid rgba(255,255,255,.08);padding-top:24px">
     <span>© 2026 easybali.surf · {{ t.foot.rights }}</span>
+    <a href="instructors.html" style="color:#FFFFFF80">For instructors</a>
     <span>{{ t.foot.made }}</span>
   </div>
 </footer>
 
 </div>
+
 </x-dc>
 <script type="text/x-dc" data-dc-script>
 class Component extends DCLogic {
@@ -595,6 +581,7 @@ class Component extends DCLogic {
     explore: { sport: 0, level: 0, date: '', spot: '', slot: '' },
     step: 1,
     addons: { photo:false, drone:false, rental:false, transferTo:false, transferBack:false },
+    rentalQty: 1,
     transferToFrom: '', transferBackFrom: '',
     form: { name:'', email:'', phone:'', age:'', sport:'', level:'', date:'', people:'1', note:'', spot:'', slot:'' },
     touched: { email:false, phone:false, age:false, date:false }
@@ -747,14 +734,28 @@ class Component extends DCLogic {
     return '#' + c.map(v => v.toString(16).padStart(2,'0')).join('');
   }
   logoGradientColor(t) {
-    return t < 0.42 ? this.lerpHex('#7DFFC4', '#61FFD0', t/0.42) : this.lerpHex('#61FFD0', '#3FD9E6', (t-0.42)/0.58);
+    return this.lerpHex('#8CFFC1', '#61C9E6', t);
   }
   buildLogoChars() {
     const word = 'EASYBALI.SURF';
-    const n = word.length;
+    const gradLen = word.indexOf('.') + 1; // gradient covers "EASYBALI." — ".SURF" renders white
+    const n = Math.max(1, gradLen - 1);
     return [...word].map((ch, i) => ({
       ch: ch === ' ' ? '\u00A0' : ch,
-      style: 'color:' + this.logoGradientColor(i/(n-1)) + ';animation-delay:' + (i * 0.09).toFixed(2) + 's'
+      style: 'color:' + (i < gradLen ? this.logoGradientColor(i/n) : '#ffffff') + ';animation-delay:' + (i * 0.09).toFixed(2) + 's'
+    }));
+  }
+  buildHeroChars(h1a, h1accent, h1b) {
+    const segs = [
+      { text: h1a, color: '#fff' },
+      { text: h1accent, color: '#61FFD0' },
+      { text: h1b, color: '#fff' }
+    ];
+    const chars = [];
+    segs.forEach(seg => { [...seg.text].forEach(ch => chars.push({ ch, color: seg.color })); });
+    return chars.map((c, i) => ({
+      ch: c.ch === ' ' ? '\u00A0' : c.ch,
+      style: 'color:' + c.color + ';animation-delay:' + (i * 0.09).toFixed(2) + 's'
     }));
   }
   // Current date + fractional hour in Bali time (WITA, UTC+8)
@@ -925,7 +926,7 @@ class Component extends DCLogic {
     const footLink = "display:block;font-size:14px;color:#FFFFFFBD;margin-bottom:11px";
 
     const glassCard = "background:linear-gradient(135deg,rgba(255,255,255,.10),rgba(255,255,255,.02));backdrop-filter:blur(24px) saturate(150%);-webkit-backdrop-filter:blur(24px) saturate(150%);border:1px solid rgba(255,255,255,.16);box-shadow:0 20px 60px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.28),inset 0 -1px 0 rgba(255,255,255,.05)";
-    const glassPanel = "background:linear-gradient(135deg,rgba(97,255,208,.09),rgba(255,255,255,.02));backdrop-filter:blur(16px) saturate(140%);-webkit-backdrop-filter:blur(16px) saturate(140%);border:1px solid rgba(97,255,208,.22);border-radius:18px;box-shadow:0 10px 40px rgba(0,0,0,.3),inset 0 1px 0 rgba(255,255,255,.22)";
+    const glassPanel = "background:linear-gradient(135deg,rgba(255,255,255,.06),rgba(255,255,255,.015));backdrop-filter:blur(18px) saturate(140%);-webkit-backdrop-filter:blur(18px) saturate(140%);border:1px solid rgba(255,255,255,.14);border-radius:18px;box-shadow:0 10px 40px rgba(0,0,0,.3),inset 0 1px 0 rgba(255,255,255,.18)";
 
     const LANGS = [
       { c:'en', n:'English' }, { c:'ru', n:'Русский' }, { c:'zh', n:'中文' },
@@ -995,13 +996,14 @@ class Component extends DCLogic {
     const tbNum = transfersAvail && ad.transferBack && this.state.transferBackFrom ? this.transferPrice(this.state.transferBackFrom, destName) : 0;
     const baseNum = pricing.base * headcount;
     const rentalRate = pricing.rental;
-    const addP = ad.photo ? SVC.addonPricing.photoVideo : 0, addD = ad.drone ? SVC.addonPricing.drone : 0, addR = ad.rental ? rentalRate * headcount : 0;
+    const rentalQty = Math.min(Math.max(1, this.state.rentalQty || 1), headcount);
+    const addP = ad.photo ? SVC.addonPricing.photoVideo : 0, addD = ad.drone ? SVC.addonPricing.drone : 0, addR = ad.rental ? rentalRate * rentalQty : 0;
     const totalNum = baseNum + addP + addD + addR + ttNum + tbNum;
     const sportName = f.sport || L.book.sportOpts[0];
     const summary = [{ label: W.sessionLine + ' · ' + sportName + ' ×' + headcount, amount: '$' + baseNum }];
     if (ad.photo) summary.push({ label: W.photo, amount: '$200' });
     if (ad.drone) summary.push({ label: W.drone, amount: '$200' });
-    if (ad.rental) summary.push({ label: W.rental + ' ×' + headcount, amount: '$' + (rentalRate * headcount) });
+    if (ad.rental) summary.push({ label: W.rental + ' ×' + rentalQty, amount: '$' + (rentalRate * rentalQty) });
     if (transfersAvail && ad.transferTo && this.state.transferToFrom) summary.push({ label: W.transferTo + ' · ' + this.state.transferToFrom, amount: '$' + ttNum });
     if (transfersAvail && ad.transferBack && this.state.transferBackFrom) summary.push({ label: W.transferBack + ' · ' + this.state.transferBackFrom, amount: '$' + tbNum });
 
@@ -1059,6 +1061,7 @@ class Component extends DCLogic {
 
       // wizard
       logoChars: this.buildLogoChars(),
+      heroChars: this.buildHeroChars(L.hero.h1a, L.hero.h1accent, L.hero.h1b),
       w: W, wizSteps, nextBtn, backBtn, addonPrice,
       isStep1: step === 1, isStep2: step === 2, isStep3: step === 3,
       next: () => {
@@ -1071,6 +1074,10 @@ class Component extends DCLogic {
       togglePhoto: () => this.setState(s => ({ addons: { ...s.addons, photo: !s.addons.photo } })),
       toggleDrone: () => this.setState(s => ({ addons: { ...s.addons, drone: !s.addons.drone } })),
       toggleRental: () => this.setState(s => ({ addons: { ...s.addons, rental: !s.addons.rental } })),
+      rentalOpen: ad.rental, rentalQty,
+      rentalQtyOpts: Array.from({ length: headcount }, (_, i) => i + 1),
+      onRentalQty: e => this.setState({ rentalQty: parseInt(e.target.value, 10) || 1 }),
+      depositNote: (W.depositNote || '').replace('{amount}', '$' + pricing.deposit),
       toggleTT: () => this.setState(s => ({ addons: { ...s.addons, transferTo: !s.addons.transferTo } })),
       toggleTB: () => this.setState(s => ({ addons: { ...s.addons, transferBack: !s.addons.transferBack } })),
       transfersAvail, noTransfers: !transfersAvail,
