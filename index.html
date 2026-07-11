@@ -34,7 +34,7 @@
   @keyframes bob{0%{transform:translateY(0) rotate(-2deg)}25%{transform:translateY(-3px) rotate(1deg)}50%{transform:translateY(-5px) rotate(2deg)}75%{transform:translateY(-2px) rotate(-1deg)}100%{transform:translateY(0) rotate(-2deg)}}
   @keyframes bobDot{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
   @keyframes sheen{0%{transform:translateX(-120%)}60%,100%{transform:translateX(220%)}}
-  @keyframes logoWave{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+  @keyframes logoWave{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
   .logo-mark{display:inline-flex}
   .logo-char{display:inline-block}
   .hero-char{display:inline-block;animation:logoWave 2.6s ease-in-out infinite}
@@ -43,6 +43,7 @@
     .nav-desktop{display:none!important}
     .nav-burger{display:flex!important}
     nav,.glass-card,.glass-panel,[style*="backdrop-filter"]{backdrop-filter:blur(6px)!important;-webkit-backdrop-filter:blur(6px)!important}
+    nav{transition:none!important}
     .prlx{transform:none!important}
     .stats-grid{grid-template-columns:repeat(2,1fr)!important;gap:32px 16px!important}
     .coaches-head{flex-direction:column!important;align-items:flex-start!important}
@@ -763,7 +764,10 @@ class Component extends DCLogic {
     };
     this._onDoc = (e) => { if (this.state.langMenuOpen && !e.target.closest('[data-langwrap]')) this.setState({ langMenuOpen: false }); };
     window.addEventListener('scroll', this._onScroll, { passive: true });
-    window.addEventListener('resize', this._onScroll, { passive: true });
+    // NOTE: deliberately not listening to 'resize' here — on mobile, hiding/showing the address
+    // bar while scrolling fires continuous resize events, which re-ran this handler and caused
+    // visible scroll jank (a feedback loop between scroll and resize). Real orientation/viewport
+    // changes still get picked up on the next scroll tick.
     document.addEventListener('mousedown', this._onDoc);
     this._parallax();
     this.maybeFetch();
@@ -774,7 +778,6 @@ class Component extends DCLogic {
   }
   componentWillUnmount() {
     window.removeEventListener('scroll', this._onScroll);
-    window.removeEventListener('resize', this._onScroll);
     window.removeEventListener('resize', this._onHeroResize);
     clearTimeout(this._heroResizeT);
     document.removeEventListener('mousedown', this._onDoc);
