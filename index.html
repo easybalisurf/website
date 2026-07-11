@@ -191,8 +191,18 @@
       <div class="cond-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:20px">
         <sc-for list="{{ reco.conds }}" as="c" hint-placeholder-count="3">
           <div style="text-align:center;padding:14px 8px;border-radius:12px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08)">
-            <div style="font-size:16px">{{ c.icon }}</div>
-            <div style="font-family:'Antonio';font-weight:600;font-size:19px;color:#fff;margin-top:3px;line-height:1">{{ c.val }}</div>
+            <div style="display:flex;align-items:center;justify-content:center;height:20px">
+              <sc-if value="{{ c.isWave }}" hint-placeholder-val="{{ false }}">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#61FFD0" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 17c1.5 1.5 3 1.5 4.5 0s3-1.5 4.5 0 3 1.5 4.5 0 3-1.5 4.5 0"/><path d="M2 12c1.5 1.5 3 1.5 4.5 0s3-1.5 4.5 0 3 1.5 4.5 0 3-1.5 4.5 0" opacity=".55"/></svg>
+              </sc-if>
+              <sc-if value="{{ c.isWind }}" hint-placeholder-val="{{ false }}">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#61FFD0" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 8h11a3 3 0 1 0-2.6-4.5"/><path d="M2 13h15a3 3 0 1 1-2.6 4.5"/><path d="M2 18h8a2.2 2.2 0 1 1-1.9 3.3"/></svg>
+              </sc-if>
+              <sc-if value="{{ c.isTide }}" hint-placeholder-val="{{ false }}">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#61FFD0" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 6.5v6l4 2"/></svg>
+              </sc-if>
+            </div>
+            <div style="font-family:'Antonio';font-weight:600;font-size:19px;color:#fff;margin-top:7px;line-height:1">{{ c.val }}</div>
             <div style="font-size:10px;letter-spacing:.3px;text-transform:uppercase;color:#FFFFFF80;margin-top:4px">{{ c.label }}</div>
           </div>
         </sc-for>
@@ -929,9 +939,9 @@ class Component extends DCLogic {
 
     const ref = per[1]; // objective morning-window snapshot — independent of rider level
     const conds = [
-      { icon: '🌊', label: sm.condWaves, val: ref.wave.toFixed(1) + ' m' },
-      { icon: '💨', label: sm.condWind, val: ref.windKt + ' kt' },
-      { icon: '🌀', label: sm.condTide, val: ref.tide }
+      { isWave: true, label: sm.condWaves, val: ref.wave.toFixed(1) + ' m' },
+      { isWind: true, label: sm.condWind, val: ref.windKt + ' kt' },
+      { isTide: true, label: sm.condTide, val: ref.tide }
     ];
 
     const spotChip = (sel) => 'background:' + (sel ? '#61FFD0' : 'rgba(255,255,255,.05)') + ';color:' + (sel ? '#08100d' : '#fff') + ';border:1px solid ' + (sel ? '#61FFD0' : 'rgba(255,255,255,.16)') + ';border-radius:100px;padding:8px 15px;font-size:13px;font-weight:600;cursor:pointer;transition:all .2s';
