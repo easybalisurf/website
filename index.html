@@ -139,6 +139,12 @@
       <a href="#book" style="display:inline-flex;align-items:center;gap:9px;background:linear-gradient(120deg,#7DFFC4,#61FFD0 42%,#3FD9E6);color:#08100d;font-weight:600;font-size:15px;padding:16px 30px;border-radius:100px;transition:transform .2s,box-shadow .2s" style-hover="box-shadow:0 10px 40px rgba(97,255,208,.45);transform:translateY(-2px)">{{ t.hero.ctaBook }}</a>
       <a href="#why" style="display:inline-flex;align-items:center;gap:9px;border:1px solid rgba(255,255,255,.35);color:#fff;font-weight:500;font-size:15px;padding:16px 30px;border-radius:100px;transition:background .2s" style-hover="background:rgba(255,255,255,.1)">{{ t.hero.ctaExplore }}</a>
     </div>
+    <div style="display:flex;flex-wrap:wrap;align-items:center;gap:22px;margin-top:68px;pointer-events:auto;animation:floatUp 1.2s .6s ease-out both">
+      <span style="font-size:10px;font-weight:600;letter-spacing:.6px;text-transform:uppercase;color:#FFFFFF60;white-space:nowrap">{{ t.certs.label }}</span>
+      <sc-for list="{{ certBadges }}" as="c" hint-placeholder-count="4">
+        <span style="font-family:'Antonio',sans-serif;font-weight:600;font-size:16px;letter-spacing:.5px;color:#FFFFFFB0;white-space:nowrap">{{ c.name }}</span>
+      </sc-for>
+    </div>
   </div>
 </header>
 
@@ -231,7 +237,7 @@
       </div>
 
       <div style="display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-top:22px;padding-top:20px;border-top:1px solid rgba(255,255,255,.1)">
-        <p style="font-size:12px;line-height:1.5;color:#FFFFFF99;margin:0;max-width:44ch">{{ t.smart.note }}</p>
+        <p style="font-size:12px;line-height:1.5;color:#FFFFFF99;margin:0;max-width:44ch">{{ t.smart.note }}<br><span style="color:#FFFFFF70">{{ t.smart.disclaimer }}</span></p>
         <button type="button" onClick="{{ bookThis }}" style="flex:none;background:linear-gradient(120deg,#7DFFC4,#61FFD0 42%,#3FD9E6);color:#08100d;font-weight:600;font-size:15px;padding:14px 26px;border:none;border-radius:100px;cursor:pointer;transition:transform .2s,box-shadow .2s" style-hover="box-shadow:0 10px 34px rgba(97,255,208,.4);transform:translateY(-1px)">{{ t.smart.bookBtn }}</button>
       </div>
     </div>
@@ -559,6 +565,7 @@
               <button type="submit" style="{{ nextBtn }}">{{ t.book.submit }}</button>
             </div>
             <p style="font-size:12px;text-align:center;margin:14px 0 0;color:#FFFFFF80">{{ t.book.fineA }}<a href="terms-of-service.html" style="color:#61FFD0">{{ t.book.fineLink }}</a>{{ t.book.fineB }}</p>
+            <p style="font-size:11px;text-align:center;margin:8px 0 0;color:#FFFFFF60;line-height:1.5">{{ t.book.recaptchaA }}<a href="https://policies.google.com/privacy" target="_blank" rel="noopener" style="color:#FFFFFF80">{{ t.book.recaptchaPrivacy }}</a>{{ t.book.recaptchaMid }}<a href="https://policies.google.com/terms" target="_blank" rel="noopener" style="color:#FFFFFF80">{{ t.book.recaptchaTerms }}</a>{{ t.book.recaptchaB }}</p>
           </div>
         </sc-if>
       </form>
@@ -573,9 +580,14 @@
       <div class="logo-mark" style="font-family:'Antonio',sans-serif;font-weight:700;font-size:24px;letter-spacing:2px;transform-origin:0% 70%;width:max-content">
         <sc-for list="{{ logoChars }}" as="lc" hint-placeholder-count="13"><span class="logo-char" style="{{ lc.style }}">{{ lc.ch }}</span></sc-for>
       </div>
-      <p style="font-size:14px;line-height:1.6;margin:16px 0 0;max-width:34ch">{{ t.foot.tagline }}</p>
+      <p style="font-size:13px;margin:16px 0 0;color:#FFFFFF80">© 2026 easybali.surf · {{ t.foot.rights }}</p>
     </div>
     
+    <div>
+      <div style="{{ footHead }}">{{ t.foot.company }}</div>
+      <a href="terms-of-service.html" style="{{ footLink }}">{{ t.foot.terms }}</a>
+      <a href="instructors.html" style="{{ footLink }}">{{ t.foot.forInstructors }}</a>
+    </div>
     <div>
       <div style="{{ footHead }}">{{ t.foot.contact }}</div>
       <a href="#" style="{{ footLink }}">hello@easybali.surf</a>
@@ -588,11 +600,6 @@
       <a href="#" style="{{ footLink }}">TikTok</a>
       <a href="#" style="{{ footLink }}">YouTube</a>
     </div>
-  </div>
-  <div class="wrap" style="max-width:1280px;margin:0 auto;padding:0 32px 40px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;font-size:13px;color:#FFFFFF80;border-top:1px solid rgba(255,255,255,.08);padding-top:24px">
-    <span>© 2026 easybali.surf · {{ t.foot.rights }}</span>
-    <a href="instructors.html" style="color:#FFFFFF80">For instructors</a>
-    <span>{{ t.foot.made }}</span>
   </div>
 </footer>
 
@@ -979,6 +986,12 @@ class Component extends DCLogic {
     const glassCard = "background:linear-gradient(135deg,rgba(255,255,255,.10),rgba(255,255,255,.02));backdrop-filter:blur(24px) saturate(150%);-webkit-backdrop-filter:blur(24px) saturate(150%);border:1px solid rgba(255,255,255,.16);box-shadow:0 20px 60px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.28),inset 0 -1px 0 rgba(255,255,255,.05)";
     const glassPanel = "background:linear-gradient(135deg,rgba(255,255,255,.06),rgba(255,255,255,.015));backdrop-filter:blur(18px) saturate(140%);-webkit-backdrop-filter:blur(18px) saturate(140%);border:1px solid rgba(255,255,255,.14);border-radius:18px;box-shadow:0 10px 40px rgba(0,0,0,.3),inset 0 1px 0 rgba(255,255,255,.18)";
 
+    const CERT_BADGES = [
+      { name: 'ISA', full: 'International Surfing Association' },
+      { name: 'IKO', full: 'International Kiteboarding Organization' },
+      { name: 'IWSA', full: 'International Wingsports Association' },
+      { name: 'ICF', full: 'International Canoe Federation (SUP)' }
+    ];
     const LANGS = [
       { c:'en', n:'English' }, { c:'ru', n:'Русский' }
     ];
@@ -1106,6 +1119,7 @@ class Component extends DCLogic {
       perks: L.why.perks,
       steps: L.how.steps,
       reviewsLoop: [...L.rev.list, ...L.rev.list],
+      certBadges: CERT_BADGES,
       sportOpts: L.book.sportOpts,
       levelOpts: L.book.levelOpts,
       spotPool: this.orderedSpots(sIdx, lvlIdx, null).pool.map(s => s.name),
@@ -1175,6 +1189,8 @@ class Component extends DCLogic {
       sessionCountOpts: ['1','2','3','4','5'],
       sessionRows: (() => {
         const SLOTS = ['08:00 – 10:00', '10:00 – 12:00', '12:00 – 14:00', '14:00 – 16:00'];
+        const SLOT_START_HOUR = { '08:00 – 10:00': 8, '10:00 – 12:00': 10, '12:00 – 14:00': 12, '14:00 – 16:00': 14 };
+        const bali = this.baliNow();
         const activeSessions = sessions.slice(0, sessionsCount);
         return activeSessions.map((row, i) => {
           const touchedRow = !!(this.state.touched.dateAt || {})[i];
@@ -1194,6 +1210,7 @@ class Component extends DCLogic {
             slotOptions: SLOTS.map(o => ({
               value: o,
               taken: !!(row.date && activeSessions.some((s, j) => j !== i && s.date === row.date && s.slot === o))
+                || (row.date === bali.dateStr && (SLOT_START_HOUR[o] - bali.hour) < 1)
             }))
           };
         });
