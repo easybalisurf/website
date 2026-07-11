@@ -26,7 +26,7 @@
   a:hover{color:#8affe0}
   ::selection{background:#61FFD0;color:#08100d}
   input,select,textarea{font-family:'Inter',sans-serif}
-  input[type="date"]{color-scheme:light}
+  input[type="date"]{color-scheme:light;background:rgb(231,226,227);border:1px solid rgb(210,206,207)!important;border-radius:12px;filter:invert(1)}
   input[type="date"]::-webkit-calendar-picker-indicator{cursor:pointer}
   @keyframes floatUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
   @keyframes slowZoom{from{transform:scale(1.08)}to{transform:scale(1)}}
@@ -995,7 +995,7 @@ class Component extends DCLogic {
     const h2Style = "font-family:'Antonio',sans-serif;font-weight:700;font-size:clamp(34px,4.5vw,62px);line-height:.98;letter-spacing:-.5px;color:#fff;margin:12px 0 0;max-width:16ch";
     const inputStyle = "width:100%;height:50px;box-sizing:border-box;margin-top:8px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.16);border-radius:12px;padding:0 15px;color:#fff;font-family:'Inter',sans-serif;font-size:15px;line-height:1;outline:none;-webkit-appearance:none;appearance:none";
     const selectStyle = inputStyle + ";background-image:url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='7' viewBox='0 0 11 7'%3E%3Cpath d='M1 1l4.5 4.5L10 1' stroke='%2361FFD0' stroke-width='1.6' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E\");background-repeat:no-repeat;background-position:right 15px center;padding-right:36px";
-    const dateInputBase = "width:100%;height:50px;box-sizing:border-box;margin-top:8px;background:#fff;border:1px solid rgba(255,255,255,.16);border-radius:12px;padding:0 15px;color:#08100d;font-family:'Inter',sans-serif;font-size:15px;line-height:50px;outline:none;-webkit-appearance:none;appearance:none";
+    const dateInputBase = "width:100%;height:50px;box-sizing:border-box;margin-top:8px;display:flex;align-items:center;padding:0 15px;font-family:'Inter',sans-serif;font-size:15px;outline:none;-webkit-appearance:none;appearance:none";
     const fieldLabel = "display:block;font-size:13px;letter-spacing:.4px;color:#61FFD0;text-transform:uppercase;font-weight:500";
     const footHead = "font-size:12px;letter-spacing:.6px;text-transform:uppercase;color:#61FFD0;margin-bottom:16px;font-weight:600";
     const footLink = "display:block;font-size:14px;color:#FFFFFFBD;margin-bottom:11px";
@@ -1221,7 +1221,7 @@ class Component extends DCLogic {
             onDate: e => { this.setSessionField(i, 'date', e.target.value); this.setState(s => ({ touched: { ...s.touched, dateAt: { ...(s.touched.dateAt||{}), [i]: true } } })); },
             onSlot: e => { this.setSessionField(i, 'slot', e.target.value); this.setState(s => ({ touched: { ...s.touched, slotAt: { ...(s.touched.slotAt||{}), [i]: true } } })); },
             err: err ? (W.errDate || 'Please choose a date') : '',
-            dateInputStyle: dateInputBase + (err ? ';border-color:#FFB454' : ''),
+            dateInputStyle: dateInputBase,
             slotErr: slotErr ? (W.errSlot || 'Please choose a time window') : '',
             slotSelectStyle: selectStyle + (slotErr ? ';border-color:#FFB454;background:rgba(255,180,84,.07)' : ''),
             slotOptions: SLOTS.map(o => ({
