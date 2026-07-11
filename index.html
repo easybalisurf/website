@@ -28,6 +28,12 @@
   input,select,textarea{font-family:'Inter',sans-serif}
   input[type="date"]{color-scheme:dark}
   input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(1) brightness(1.3);cursor:pointer}
+  input[type="date"]::-webkit-datetime-edit,
+  input[type="date"]::-webkit-datetime-edit-fields-wrapper,
+  input[type="date"]::-webkit-datetime-edit-text,
+  input[type="date"]::-webkit-datetime-edit-month-field,
+  input[type="date"]::-webkit-datetime-edit-day-field,
+  input[type="date"]::-webkit-datetime-edit-year-field{color:#fff!important;-webkit-text-fill-color:#fff!important;opacity:1!important}
   @keyframes floatUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
   @keyframes slowZoom{from{transform:scale(1.08)}to{transform:scale(1)}}
   @keyframes marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
