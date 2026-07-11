@@ -27,7 +27,8 @@
   ::selection{background:#61FFD0;color:#08100d}
   input,select,textarea{font-family:'Inter',sans-serif}
   input[type="date"]{color-scheme:dark}
-  input[type="date"]::-webkit-calendar-picker-indicator{opacity:0}
+  input[type="date"]::-webkit-calendar-picker-indicator{position:absolute;right:0;top:0;width:100%;height:100%;opacity:0;margin:0;cursor:pointer}
+  input[type="date"]{position:relative}
   @keyframes floatUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
   @keyframes slowZoom{from{transform:scale(1.08)}to{transform:scale(1)}}
   @keyframes marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
@@ -44,7 +45,6 @@
     .nav-burger{display:flex!important}
     nav,.glass-card,.glass-panel,[style*="backdrop-filter"]{backdrop-filter:blur(6px)!important;-webkit-backdrop-filter:blur(6px)!important}
     nav{transition:none!important}
-    .prlx{transform:none!important}
     .stats-grid{grid-template-columns:repeat(2,1fr)!important;gap:32px 16px!important}
     .coaches-head{flex-direction:column!important;align-items:flex-start!important}
     .book-grid{grid-template-columns:1fr!important;gap:38px!important}
@@ -434,7 +434,7 @@
                   <div class="form-2col" style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
                     <label style="{{ fieldLabel }}">{{ t.book.fDate }}
                       <div style="position:relative">
-                        <input required="" type="date" value="{{ row.date }}" onInput="{{ row.onDate }}" onBlur="{{ row.onDate }}" onClick="{{ openDatePicker }}" style="{{ row.dateInputStyle }}">
+                        <input required="" type="date" min="{{ row.minDate }}" value="{{ row.date }}" onInput="{{ row.onDate }}" onBlur="{{ row.onDate }}" onClick="{{ openDatePicker }}" style="{{ row.dateInputStyle }}">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#61FFD0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="position:absolute;right:15px;top:50%;transform:translateY(-50%);pointer-events:none"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 9h18M8 3v4M16 3v4"/></svg>
                       </div>
                       <sc-if value="{{ row.err }}" hint-placeholder-val="{{ false }}"><span style="display:flex;align-items:center;gap:6px;font-size:12px;color:#FFB454;margin-top:7px;font-weight:400;text-transform:none;letter-spacing:0"><span style="width:4px;height:4px;border-radius:50%;background:#FFB454;flex:none"></span>{{ row.err }}</span></sc-if>
@@ -745,7 +745,6 @@ class Component extends DCLogic {
     this._wxTries = {};
     this._wxReq = null;
     this._parallax = () => {
-      if (window.innerWidth <= 880) return; // skip JS-driven parallax on phones — the #1 cause of scroll jank there
       const y = window.scrollY, vh = window.innerHeight;
       document.querySelectorAll('.prlx').forEach(el => {
         const sp = parseFloat(el.dataset.speed || '0.1');
@@ -1301,7 +1300,7 @@ class Component extends DCLogic {
           return {
             num: i + 1,
             label: (W.sessionLine || 'Session') + ' ' + (i + 1),
-            date: row.date, slot: row.slot,
+            date: row.date, slot: row.slot, minDate: bali.dateStr,
             onDate: e => { this.setSessionField(i, 'date', e.target.value); this.setState(s => ({ touched: { ...s.touched, dateAt: { ...(s.touched.dateAt||{}), [i]: true } } })); },
             onSlot: e => { this.setSessionField(i, 'slot', e.target.value); this.setState(s => ({ touched: { ...s.touched, slotAt: { ...(s.touched.slotAt||{}), [i]: true } } })); },
             err: err ? (W.errDate || 'Please choose a date') : '',
