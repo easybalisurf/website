@@ -27,7 +27,7 @@
   ::selection{background:#61FFD0;color:#08100d}
   input,select,textarea{font-family:'Inter',sans-serif}
   input[type="date"]{color-scheme:dark}
-  input[type="date"]::-webkit-calendar-picker-indicator{position:absolute;right:15px;top:50%;transform:translateY(-50%);margin:0;cursor:pointer;filter:brightness(0) saturate(100%) invert(78%) sepia(64%) saturate(1000%) hue-rotate(100deg) brightness(103%) contrast(101%)}
+  input[type="date"]::-webkit-calendar-picker-indicator{opacity:0}
   @keyframes floatUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
   @keyframes slowZoom{from{transform:scale(1.08)}to{transform:scale(1)}}
   @keyframes marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
@@ -421,7 +421,10 @@
                   <div style="font-size:12px;font-weight:600;letter-spacing:.4px;text-transform:uppercase;color:#61FFD0;margin-bottom:10px">{{ row.label }}</div>
                   <div class="form-2col" style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
                     <label style="{{ fieldLabel }}">{{ t.book.fDate }}
-                      <input required="" type="date" value="{{ row.date }}" onInput="{{ row.onDate }}" onBlur="{{ row.onDate }}" style="{{ row.dateInputStyle }}">
+                      <div style="position:relative">
+                        <input required="" type="date" value="{{ row.date }}" onInput="{{ row.onDate }}" onBlur="{{ row.onDate }}" style="{{ row.dateInputStyle }}">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#61FFD0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="position:absolute;right:15px;top:50%;transform:translateY(-50%);pointer-events:none"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 9h18M8 3v4M16 3v4"/></svg>
+                      </div>
                       <sc-if value="{{ row.err }}" hint-placeholder-val="{{ false }}"><span style="display:flex;align-items:center;gap:6px;font-size:12px;color:#FFB454;margin-top:7px;font-weight:400;text-transform:none;letter-spacing:0"><span style="width:4px;height:4px;border-radius:50%;background:#FFB454;flex:none"></span>{{ row.err }}</span></sc-if>
                     </label>
                     <label style="{{ fieldLabel }}">{{ t.book.fSlot }}
@@ -449,6 +452,10 @@
               <div style="display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-top:14px;padding-top:14px;border-top:1px solid rgba(255,255,255,.12)">
                 <span style="font-size:13px;letter-spacing:.4px;text-transform:uppercase;color:#FFFFFF99">{{ w.total }}</span>
                 <span style="font-family:'Antonio',sans-serif;font-weight:700;font-size:36px;color:#fff;line-height:1">{{ orderTotal }}</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;gap:12px;margin-top:8px">
+                <span style="font-size:12px;color:#FFFFFF80">{{ depositLabel }}</span>
+                <span style="font-size:13px;color:#61FFD0;font-weight:600">{{ depositDue }}</span>
               </div>
             </div>
             <button type="button" onClick="{{ next }}" style="{{ nextBtn }};margin-top:20px">{{ w.next }} →</button>
@@ -529,6 +536,10 @@
                 <span style="font-size:13px;letter-spacing:.4px;text-transform:uppercase;color:#FFFFFF99">{{ w.total }}</span>
                 <span style="font-family:'Antonio',sans-serif;font-weight:700;font-size:36px;color:#fff;line-height:1">{{ orderTotal }}</span>
               </div>
+              <div style="display:flex;justify-content:space-between;gap:12px;margin-top:8px">
+                <span style="font-size:12px;color:#FFFFFF80">{{ depositLabel }}</span>
+                <span style="font-size:13px;color:#61FFD0;font-weight:600">{{ depositDue }}</span>
+              </div>
             </div>
             <div style="display:flex;gap:12px;margin-top:20px">
               <button type="button" onClick="{{ back }}" style="{{ backBtn }}">← {{ w.back }}</button>
@@ -575,13 +586,16 @@
                 <span style="font-size:13px;letter-spacing:.4px;text-transform:uppercase;color:#FFFFFF99">{{ w.total }}</span>
                 <span style="font-family:'Antonio',sans-serif;font-weight:700;font-size:36px;color:#fff;line-height:1">{{ orderTotal }}</span>
               </div>
+              <div style="display:flex;justify-content:space-between;gap:12px;margin-top:8px">
+                <span style="font-size:12px;color:#FFFFFF80">{{ depositLabel }}</span>
+                <span style="font-size:13px;color:#61FFD0;font-weight:600">{{ depositDue }}</span>
+              </div>
             </div>
             <div style="display:flex;gap:12px;margin-top:20px">
               <button type="button" onClick="{{ back }}" style="{{ backBtn }}">← {{ w.back }}</button>
               <button type="submit" style="{{ nextBtn }}">{{ t.book.submit }}</button>
             </div>
             <p style="font-size:12px;text-align:center;margin:14px 0 0;color:#FFFFFF80">{{ t.book.fineA }}<a href="terms-of-service.html" style="color:#61FFD0">{{ t.book.fineLink }}</a>{{ t.book.fineB }}</p>
-            <p style="font-size:11px;text-align:center;margin:8px 0 0;color:#FFFFFF60;line-height:1.5">{{ t.book.recaptchaA }}<a href="https://policies.google.com/privacy" target="_blank" rel="noopener" style="color:#FFFFFF80">{{ t.book.recaptchaPrivacy }}</a>{{ t.book.recaptchaMid }}<a href="https://policies.google.com/terms" target="_blank" rel="noopener" style="color:#FFFFFF80">{{ t.book.recaptchaTerms }}</a>{{ t.book.recaptchaB }}</p>
           </div>
         </sc-if>
       </form>
@@ -988,7 +1002,7 @@ class Component extends DCLogic {
     const h2Style = "font-family:'Antonio',sans-serif;font-weight:700;font-size:clamp(34px,4.5vw,62px);line-height:.98;letter-spacing:-.5px;color:#fff;margin:12px 0 0;max-width:16ch";
     const inputStyle = "width:100%;height:50px;box-sizing:border-box;margin-top:8px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.16);border-radius:12px;padding:0 15px;color:#fff;font-family:'Inter',sans-serif;font-size:15px;line-height:1;outline:none;-webkit-appearance:none;appearance:none";
     const selectStyle = inputStyle + ";background-image:url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='7' viewBox='0 0 11 7'%3E%3Cpath d='M1 1l4.5 4.5L10 1' stroke='%2361FFD0' stroke-width='1.6' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E\");background-repeat:no-repeat;background-position:right 15px center;padding-right:36px";
-    const dateInputBase = inputStyle + ";text-align:left;justify-items:start;position:relative;padding-right:36px";
+    const dateInputBase = inputStyle + ";display:flex;align-items:center;justify-content:flex-start;text-align:left;padding-right:36px";
     const fieldLabel = "display:block;font-size:13px;letter-spacing:.4px;color:#61FFD0;text-transform:uppercase;font-weight:500";
     const footHead = "font-size:12px;letter-spacing:.6px;text-transform:uppercase;color:#61FFD0;margin-bottom:16px;font-weight:600";
     const footLink = "display:block;font-size:14px;color:#FFFFFFBD;margin-bottom:11px";
@@ -1190,6 +1204,8 @@ class Component extends DCLogic {
       ttPrice: ad.transferTo ? (this.state.transferToFrom ? '$' + ttNum : '—') : '',
       tbPrice: ad.transferBack ? (this.state.transferBackFrom ? '$' + tbNum : '—') : '',
       summary, orderTotal: '$' + totalNum,
+      depositDue: '$' + Math.round(baseNum * 0.2),
+      depositLabel: (W.sessionDeposit || 'Deposit due (20% of session price)'),
 
       form: f,
       onName: e => this.set('name', e.target.value),
