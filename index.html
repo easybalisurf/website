@@ -50,6 +50,12 @@
     .wrap{padding-left:22px!important;padding-right:22px!important}
     .sec-pad{padding-top:74px!important;padding-bottom:74px!important}
   }
+  @media(max-height:500px) and (orientation:landscape){
+    #hero{min-height:auto!important;padding-top:90px!important;align-items:flex-start!important}
+    #heroContent h1{font-size:clamp(30px,7vw,56px)!important;max-width:20ch!important}
+    #heroContent p{margin-top:14px!important}
+    #heroContent > div:last-child{margin-top:20px!important}
+  }
   @media(max-width:560px){
     .form-2col{grid-template-columns:1fr!important}
     .footer-grid{grid-template-columns:1fr!important}
@@ -118,7 +124,7 @@
 </div>
 
 <!-- ============ HERO ============ -->
-<header id="hero" data-screen-label="Hero" style="position:relative;min-height:100vh;display:flex;align-items:flex-end;overflow:hidden">
+<header id="hero" data-screen-label="Hero" style="position:relative;min-height:100vh;min-height:100dvh;display:flex;align-items:flex-end;overflow:hidden">
   <div id="heroBgLayer" class="prlx" data-speed="0.14" style="position:absolute;inset:-14% 0;will-change:transform">
     <div style="position:absolute;inset:0;animation:slowZoom 2.4s ease-out both">
       <x-import component-from-global-scope="image-slot" from="./image-slot.js" id="hero-bg" shape="rect" fit="cover" src="https://images.unsplash.com/photo-1762705402471-8f0cf07d694f?fm=jpg&amp;q=78&amp;w=2400&amp;auto=format&amp;fit=crop&amp;ixlib=rb-4.1.0" credit="Photo by Thibault Mokuenko on Unsplash" credit-href="https://unsplash.com/@tmokuenko" placeholder="Drop a wide surf/ocean photo" hint-size="100%,100%"></x-import>
