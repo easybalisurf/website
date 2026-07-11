@@ -136,7 +136,14 @@
       <p style="{{ eyebrow }}">{{ t.hero.eyebrow }}</p>
     </div>
     <h1 style="font-family:'Antonio',sans-serif;font-weight:700;font-size:clamp(44px,8vw,118px);line-height:.92;letter-spacing:-1px;color:#fff;margin:14px 0 0;max-width:15ch;animation:floatUp .9s .2s ease-out both">
-      <sc-for list="{{ heroChars }}" as="hc" hint-placeholder-count="36"><span class="hero-char" style="{{ hc.style }}">{{ hc.ch }}</span></sc-for>
+      <sc-for list="{{ heroChars }}" as="hw" hint-placeholder-count="8">
+        <sc-if value="{{ hw.space }}" hint-placeholder-val="{{ false }}"><span>&#160;</span></sc-if>
+        <sc-if value="{{ hw.chars }}" hint-placeholder-val="{{ true }}">
+          <span style="display:inline-block;white-space:nowrap">
+            <sc-for list="{{ hw.chars }}" as="hc" hint-placeholder-count="5"><span class="hero-char" style="{{ hc.style }}">{{ hc.ch }}</span></sc-for>
+          </span>
+        </sc-if>
+      </sc-for>
     </h1>
     <p style="max-width:52ch;font-size:clamp(15px,2.2vw,18px);line-height:1.6;color:#FFFFFFBD;margin:26px 0 0;animation:floatUp 1s .35s ease-out both">
       {{ t.hero.lead }}
@@ -293,7 +300,7 @@
     <h2 style="{{ h2Style }};text-align:center;margin:12px auto 0">{{ t.how.h2 }}</h2>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:24px;margin-top:56px">
       <sc-for list="{{ steps }}" as="st" hint-placeholder-count="3">
-        <div style="position:relative;padding:34px 28px;border:1px solid rgba(255,255,255,.12);border-radius:18px;background:rgba(255,255,255,.035);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)">
+        <div style="position:relative;padding:34px 28px;border:1px solid rgba(255,255,255,.12);border-radius:18px;background:rgba(255,255,255,.035);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(14px)">
           <div style="font-family:'Antonio',sans-serif;font-weight:700;font-size:64px;color:rgba(97,255,208,.32);line-height:.8">{{ st.n }}</div>
           <h4 style="font-family:'Antonio',sans-serif;font-weight:600;font-size:24px;color:#fff;margin:16px 0 8px;line-height:1.05">{{ st.title }}</h4>
           <p style="font-size:15px;line-height:1.6;margin:0">{{ st.body }}</p>
@@ -332,7 +339,7 @@
     <h2 style="{{ h2Style }};text-align:center;margin:12px auto 48px">{{ t.faq.h2 }}</h2>
     <div style="display:flex;flex-direction:column;gap:14px">
       <sc-for list="{{ faqs }}" as="q" hint-placeholder-count="5">
-        <div style="border:1px solid rgba(255,255,255,.14);border-radius:16px;background:rgba(255,255,255,.045);backdrop-filter:blur(22px) saturate(150%);-webkit-backdrop-filter:blur(22px) saturate(150%);box-shadow:inset 0 1px 0 rgba(255,255,255,.12);overflow:hidden">
+        <div style="border:1px solid rgba(255,255,255,.14);border-radius:16px;background:rgba(255,255,255,.045);backdrop-filter:blur(13px) saturate(150%);-webkit-backdrop-filter:blur(13px) saturate(150%);box-shadow:inset 0 1px 0 rgba(255,255,255,.12);overflow:hidden">
           <button onClick="{{ q.toggle }}" style="width:100%;display:flex;align-items:center;justify-content:space-between;gap:20px;background:transparent;border:none;cursor:pointer;text-align:left;padding:24px 26px;color:#fff;font-family:'Antonio',sans-serif;font-weight:600;font-size:20px;line-height:1.15">
             {{ q.question }}
             <span style="{{ q.iconStyle }}">+</span>
@@ -396,6 +403,11 @@
                 </select>
               </label>
             </div>
+            <label style="{{ fieldLabel }};margin-top:16px">{{ t.book.fSpot }}
+              <select value="{{ form.spot }}" onChange="{{ onSpotField }}" style="{{ selectStyle }}">
+                <sc-for list="{{ spotPool }}" as="o" hint-placeholder-count="3"><option style="color:#000">{{ o }}</option></sc-for>
+              </select>
+            </label>
             <div class="form-2col" style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px">
               <label style="{{ fieldLabel }}">{{ t.book.fSessions }}
                 <select value="{{ form.sessionCount }}" onChange="{{ onSessionCount }}" style="{{ selectStyle }}">
@@ -410,11 +422,6 @@
                 </select>
               </label>
             </div>
-            <label style="{{ fieldLabel }};margin-top:16px">{{ t.book.fSpot }}
-              <select value="{{ form.spot }}" onChange="{{ onSpotField }}" style="{{ selectStyle }}">
-                <sc-for list="{{ spotPool }}" as="o" hint-placeholder-count="3"><option style="color:#000">{{ o }}</option></sc-for>
-              </select>
-            </label>
             <div style="display:flex;flex-direction:column;gap:14px;margin-top:16px">
               <sc-for list="{{ sessionRows }}" as="row" hint-placeholder-count="1">
                 <div style="padding:14px;border-radius:14px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08)">
@@ -831,12 +838,26 @@ class Component extends DCLogic {
       { text: h1accent, color: '#61FFD0' },
       { text: h1b, color: '#fff' }
     ];
-    const chars = [];
-    segs.forEach(seg => { [...seg.text].forEach(ch => chars.push({ ch, color: seg.color })); });
-    return chars.map((c, i) => ({
-      ch: c.ch === ' ' ? '\u00A0' : c.ch,
-      style: 'color:' + c.color + ';animation-delay:' + (i * 0.09).toFixed(2) + 's'
-    }));
+    // Group runs of non-space chars into words so a word never splits across a line break —
+    // each word is one inline-block "waveword", its letters wave together, and CSS wraps whole words.
+    const words = []; // [{ chars: [{ch,color}], space: boolean }]
+    let cur = null;
+    segs.forEach(seg => {
+      [...seg.text].forEach(ch => {
+        if (ch === ' ') { cur = null; words.push({ space: true }); }
+        else { if (!cur) { cur = { chars: [] }; words.push(cur); } cur.chars.push({ ch, color: seg.color }); }
+      });
+    });
+    let i = 0;
+    return words.map(w => {
+      if (w.space) return { space: true };
+      return {
+        chars: w.chars.map(c => ({
+          ch: c.ch,
+          style: 'color:' + c.color + ';animation-delay:' + ((i++) * 0.09).toFixed(2) + 's'
+        }))
+      };
+    });
   }
   // Current date + fractional hour in Bali time (WITA, UTC+8)
   baliNow() {
@@ -1007,8 +1028,8 @@ class Component extends DCLogic {
     const footHead = "font-size:12px;letter-spacing:.6px;text-transform:uppercase;color:#61FFD0;margin-bottom:16px;font-weight:600";
     const footLink = "display:block;font-size:14px;color:#FFFFFFBD;margin-bottom:11px";
 
-    const glassCard = "background:linear-gradient(135deg,rgba(255,255,255,.10),rgba(255,255,255,.02));backdrop-filter:blur(24px) saturate(150%);-webkit-backdrop-filter:blur(24px) saturate(150%);border:1px solid rgba(255,255,255,.16);box-shadow:0 20px 60px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.28),inset 0 -1px 0 rgba(255,255,255,.05)";
-    const glassPanel = "background:linear-gradient(135deg,rgba(255,255,255,.06),rgba(255,255,255,.015));backdrop-filter:blur(18px) saturate(140%);-webkit-backdrop-filter:blur(18px) saturate(140%);border:1px solid rgba(255,255,255,.14);border-radius:18px;box-shadow:0 10px 40px rgba(0,0,0,.3),inset 0 1px 0 rgba(255,255,255,.18)";
+    const glassCard = "background:linear-gradient(135deg,rgba(255,255,255,.10),rgba(255,255,255,.02));backdrop-filter:blur(14px) saturate(150%);-webkit-backdrop-filter:blur(14px) saturate(150%);border:1px solid rgba(255,255,255,.16);box-shadow:0 20px 60px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.28),inset 0 -1px 0 rgba(255,255,255,.05)";
+    const glassPanel = "background:linear-gradient(135deg,rgba(255,255,255,.06),rgba(255,255,255,.015));backdrop-filter:blur(12px) saturate(140%);-webkit-backdrop-filter:blur(12px) saturate(140%);border:1px solid rgba(255,255,255,.14);border-radius:18px;box-shadow:0 10px 40px rgba(0,0,0,.3),inset 0 1px 0 rgba(255,255,255,.18)";
 
     const CERT_BADGES = [
       { name: 'ISA', full: 'International Surfing Association' },
@@ -1034,8 +1055,17 @@ class Component extends DCLogic {
     const onExSport = e => this.setEx('sport', Math.max(0, L.book.sportOpts.indexOf(e.target.value)));
     const onExLevel = e => this.setEx('level', Math.max(0, L.book.levelOpts.indexOf(e.target.value)));
     const bookThis = () => {
-      const dt = /^\d{4}-\d{2}-\d{2}$/.test(ex.date) ? ex.date : this.todayStr();
-      const slot = ex.slot || (reco.slots[0] && reco.slots[0].time) || '';
+      // If the chosen/default date has no time windows left (e.g. all of today's already ended
+      // in Bali time), roll forward to the next day with an available window instead of booking a blank slot.
+      let dt = /^\d{4}-\d{2}-\d{2}$/.test(ex.date) ? ex.date : this.todayStr();
+      let slot = ex.slot || (reco.slots[0] && reco.slots[0].time) || '';
+      if (!slot) {
+        for (let k = 1; k <= 7 && !slot; k++) {
+          const nextDate = this.addDaysStr(dt, k);
+          const nextReco = this.buildReco(ex.sport, ex.level, nextDate, L.smart, ex.spot, '', this.state.wx[activeForKey.lat + ',' + activeForKey.lon + ',' + wxStart], locale);
+          if (nextReco.slots[0]) { dt = nextDate; slot = nextReco.slots[0].time; }
+        }
+      }
       this.setState(s => ({ step: 1, form: { ...s.form, sport: L.book.sportOpts[ex.sport], level: L.book.levelOpts[ex.level], sessionCount: '1', sessions: [{ date: dt, slot }], spot: reco.active.name } }));
       const el = document.getElementById('book'); if (el) window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - 20, behavior: 'smooth' });
     };
@@ -1113,7 +1143,7 @@ class Component extends DCLogic {
     return {
       t: L,
       navStyle: (this.state.scrolled || this.state.menuOpen)
-        ? "position:fixed;top:0;left:0;right:0;z-index:70;background:linear-gradient(180deg,rgba(8,14,13,.72),rgba(8,14,13,.5));backdrop-filter:blur(20px) saturate(160%);-webkit-backdrop-filter:blur(20px) saturate(160%);border-bottom:1px solid rgba(255,255,255,.12);box-shadow:0 8px 40px rgba(0,0,0,.25),inset 0 1px 0 rgba(255,255,255,.16);transition:all .35s"
+        ? "position:fixed;top:0;left:0;right:0;z-index:70;background:linear-gradient(180deg,rgba(8,14,13,.85),rgba(8,14,13,.75));backdrop-filter:blur(10px) saturate(140%);-webkit-backdrop-filter:blur(10px) saturate(160%);border-bottom:1px solid rgba(255,255,255,.12);box-shadow:0 8px 40px rgba(0,0,0,.25),inset 0 1px 0 rgba(255,255,255,.16);transition:all .35s"
         : "position:fixed;top:0;left:0;right:0;z-index:70;background:transparent;border-bottom:1px solid transparent;transition:all .35s",
       eyebrow: subhead, subhead, h2Style, inputStyle, selectStyle, fieldLabel, footHead, footLink, glassCard, glassPanel,
 
@@ -1132,7 +1162,7 @@ class Component extends DCLogic {
 
       toggleMenu: () => this.setState(s => ({ menuOpen: !s.menuOpen })),
       closeMenu: () => this.setState({ menuOpen: false }),
-      drawerStyle: "position:fixed;inset:0;z-index:65;background:rgba(8,14,13,.98);backdrop-filter:blur(14px);display:flex;align-items:center;justify-content:center;transition:opacity .3s,visibility .3s;opacity:" + (this.state.menuOpen ? '1' : '0') + ";visibility:" + (this.state.menuOpen ? 'visible' : 'hidden'),
+      drawerStyle: "position:fixed;inset:0;z-index:65;background:rgba(8,14,13,.98);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;transition:opacity .3s,visibility .3s;opacity:" + (this.state.menuOpen ? '1' : '0') + ";visibility:" + (this.state.menuOpen ? 'visible' : 'hidden'),
       drawerLink: "font-family:'Antonio',sans-serif;font-weight:600;font-size:30px;color:#fff;padding:12px 0;border-bottom:1px solid rgba(255,255,255,.08)",
       burgerTop: "display:block;width:20px;height:2px;background:#fff;border-radius:2px;transition:transform .3s;transform:" + (this.state.menuOpen ? 'translateY(7px) rotate(45deg)' : 'none'),
       burgerMid: "display:block;width:20px;height:2px;background:#fff;border-radius:2px;transition:opacity .2s;opacity:" + (this.state.menuOpen ? '0' : '1'),
