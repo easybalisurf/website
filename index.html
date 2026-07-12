@@ -263,7 +263,7 @@
       </div>
 
       <div style="display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-top:22px;padding-top:20px;border-top:1px solid rgba(255,255,255,.1)">
-        <p style="font-size:12px;line-height:1.5;color:#FFFFFF99;margin:0;max-width:44ch">{{ t.smart.note }}<br><span style="color:#FFFFFF70">{{ t.smart.disclaimer }}</span></p>
+        <p style="font-size:12px;line-height:1.5;color:#FFFFFF99;margin:0;max-width:44ch">{{ t.smart.disclaimer }}</p>
         <button type="button" onClick="{{ bookThis }}" style="flex:none;background:linear-gradient(120deg,#7DFFC4,#61FFD0 42%,#3FD9E6);color:#08100d;font-weight:600;font-size:15px;padding:14px 26px;border:none;border-radius:100px;cursor:pointer;transition:transform .2s,box-shadow .2s" style-hover="box-shadow:0 10px 34px rgba(97,255,208,.4);transform:translateY(-1px)">{{ t.smart.bookBtn }}</button>
       </div>
     </div>
@@ -470,6 +470,10 @@
                 <span style="font-size:12px;color:#FFFFFF80">{{ depositLabel }}</span>
                 <span style="font-size:13px;color:#61FFD0;font-weight:600">{{ depositDue }}</span>
               </div>
+              <div style="display:flex;justify-content:space-between;gap:12px;margin-top:6px">
+                <span style="font-size:12px;color:#FFFFFF80">{{ remainderLabel }}</span>
+                <span style="font-size:12px;color:#FFFFFFBD">{{ remainderDue }}</span>
+              </div>
             </div>
             <button type="button" onClick="{{ next }}" style="{{ nextBtn }};margin-top:20px">{{ w.next }} →</button>
           </div>
@@ -565,6 +569,10 @@
                 <span style="font-size:12px;color:#FFFFFF80">{{ depositLabel }}</span>
                 <span style="font-size:13px;color:#61FFD0;font-weight:600">{{ depositDue }}</span>
               </div>
+              <div style="display:flex;justify-content:space-between;gap:12px;margin-top:6px">
+                <span style="font-size:12px;color:#FFFFFF80">{{ remainderLabel }}</span>
+                <span style="font-size:12px;color:#FFFFFFBD">{{ remainderDue }}</span>
+              </div>
             </div>
             <div style="display:flex;gap:12px;margin-top:20px">
               <button type="button" onClick="{{ back }}" style="{{ backBtn }}">← {{ w.back }}</button>
@@ -583,12 +591,14 @@
               <label style="{{ fieldLabel }}">{{ t.book.fEmail }}
                 <input required="" type="email" value="{{ form.email }}" onInput="{{ onEmail }}" onBlur="{{ onEmail }}" placeholder="you@email.com" style="{{ emailInputStyle }}">
                 <sc-if value="{{ emailErr }}" hint-placeholder-val="{{ false }}"><span style="display:flex;align-items:center;gap:6px;font-size:12px;color:#FFB454;margin-top:7px;font-weight:400;text-transform:none;letter-spacing:0"><span style="width:4px;height:4px;border-radius:50%;background:#FFB454;flex:none"></span>{{ emailErr }}</span></sc-if>
+                <sc-if value="{{ emailHintShow }}" hint-placeholder-val="{{ true }}"><span style="display:block;font-size:12px;color:#FFFFFF80;margin-top:7px;font-weight:400;text-transform:none;letter-spacing:0">{{ t.book.fEmailHint }}</span></sc-if>
               </label>
             </div>
             <div class="form-2col" style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px">
               <label style="{{ fieldLabel }}">{{ t.book.fPhone }}
                 <input required="" type="tel" value="{{ form.phone }}" onInput="{{ onPhone }}" onBlur="{{ onPhone }}" placeholder="{{ t.book.phPhone }}" style="{{ phoneInputStyle }}">
                 <sc-if value="{{ phoneErr }}" hint-placeholder-val="{{ false }}"><span style="display:flex;align-items:center;gap:6px;font-size:12px;color:#FFB454;margin-top:7px;font-weight:400;text-transform:none;letter-spacing:0"><span style="width:4px;height:4px;border-radius:50%;background:#FFB454;flex:none"></span>{{ phoneErr }}</span></sc-if>
+                <sc-if value="{{ phoneHintShow }}" hint-placeholder-val="{{ true }}"><span style="display:block;font-size:12px;color:#FFFFFF80;margin-top:7px;font-weight:400;text-transform:none;letter-spacing:0">{{ t.book.fPhoneHint }}</span></sc-if>
               </label>
               <label style="{{ fieldLabel }}">{{ w.fAge }}
                 <input type="number" min="6" max="99" value="{{ form.age }}" onInput="{{ onAge }}" onBlur="{{ onAge }}" placeholder="{{ w.phAge }}" style="{{ ageInputStyle }}">
@@ -619,6 +629,10 @@
               <div style="display:flex;justify-content:space-between;gap:12px;margin-top:8px">
                 <span style="font-size:12px;color:#FFFFFF80">{{ depositLabel }}</span>
                 <span style="font-size:13px;color:#61FFD0;font-weight:600">{{ depositDue }}</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;gap:12px;margin-top:6px">
+                <span style="font-size:12px;color:#FFFFFF80">{{ remainderLabel }}</span>
+                <span style="font-size:12px;color:#FFFFFFBD">{{ remainderDue }}</span>
               </div>
             </div>
             <div style="display:flex;gap:12px;margin-top:20px">
@@ -739,6 +753,25 @@ class Component extends DCLogic {
     const avgGrab = 1.5 + km * 0.5;
     return Math.max(3, Math.round(avgGrab * 1.2));
   }
+  // Live USD→IDR rate, cached in localStorage for 6h so we don't refetch on every render/reload.
+  // Falls back to a hardcoded rate if the fetch fails or hasn't resolved yet.
+  fetchIdrRate() {
+    const FALLBACK = 18000, TTL = 6 * 60 * 60 * 1000;
+    try {
+      const cached = JSON.parse(localStorage.getItem('easybali_idr_rate') || 'null');
+      if (cached && Date.now() - cached.t < TTL && cached.rate) { this.setState({ idrRate: cached.rate }); return; }
+    } catch (e) {}
+    fetch('https://open.er-api.com/v6/latest/USD')
+      .then(r => r.json())
+      .then(data => {
+        const rate = data && data.rates && data.rates.IDR;
+        if (rate) {
+          try { localStorage.setItem('easybali_idr_rate', JSON.stringify({ rate, t: Date.now() })); } catch (e) {}
+          this.setState({ idrRate: rate });
+        }
+      })
+      .catch(() => {}); // keep using FALLBACK on failure
+  }
   // Rough drive-time estimate for the route (road-adjusted distance / ~28km/h average Bali traffic speed).
   transferEtaMin(originName, destName) {
     if (!originName) return 0;
@@ -760,6 +793,7 @@ class Component extends DCLogic {
   componentDidMount() {
     this._raf = null;
     this._wxFail = {};
+    this.fetchIdrRate();
     setTimeout(this.measureHeroLines, 150); // after webfont/layout settles
     this._onHeroResize = () => { clearTimeout(this._heroResizeT); this._heroResizeT = setTimeout(this.measureHeroLines, 120); };
     window.addEventListener('resize', this._onHeroResize);
@@ -902,7 +936,7 @@ class Component extends DCLogic {
         else { if (!cur) { cur = { chars: [] }; words.push(cur); } cur.chars.push({ ch, color: seg.color }); }
       });
     });
-    const noAnim = this.state.lang === 'ru'; // Russian headline: static, no wave animation
+    const noAnim = true; // headline is static
     let i = 0;
     return words.map(w => {
       if (w.space) return { space: true };
@@ -1012,19 +1046,18 @@ class Component extends DCLogic {
     const badgeBg = ['rgba(97,255,208,.18)', 'rgba(255,255,255,.1)', 'rgba(255,255,255,.07)', 'rgba(255,255,255,.05)'];
     const badgeFg = ['#61FFD0', '#ffffff', '#FFFFFFBD', '#FFFFFF80'];
 
-    const slotEnd = [10, 12, 14, 16]; // end hour of each base window
     let slots = baseSlots.map((time, i) => {
       const qi = rankOf[i];
       return {
-        time, qi, endH: slotEnd[i], quality: sm.q[qi], wind: per[i].windLabel, tide: per[i].tide,
+        time, qi, startH: hoursH[i], quality: sm.q[qi], wind: per[i].windLabel, tide: per[i].tide,
         dotStyle: 'width:9px;height:9px;border-radius:50%;background:' + dotC[qi],
         badge: 'font-size:11px;font-weight:600;letter-spacing:.3px;text-transform:uppercase;padding:3px 9px;border-radius:100px;background:' + badgeBg[qi] + ';color:' + badgeFg[qi]
       };
     });
     slots.sort((a, b) => a.qi - b.qi);
-    // Drop windows that have already ended today (Bali time)
+    // Same "≥1h before start" cutoff the booking form enforces — keep the two in sync.
     const bn = this.baliNow();
-    if (targetDate === bn.dateStr) slots = slots.filter(sl => sl.endH > bn.hour);
+    if (targetDate === bn.dateStr) slots = slots.filter(sl => (sl.startH - bn.hour) >= 1);
 
     const ref = per[1]; // objective morning-window snapshot — independent of rider level
     const conds = [
@@ -1321,6 +1354,14 @@ class Component extends DCLogic {
       summary, orderTotal: '$' + totalNum,
       depositDue: '$' + Math.round(baseNum * 0.2),
       depositLabel: (L.book.sessionDeposit || 'Deposit due (20% of session price)'),
+      // Live USD→IDR rate (fetched in componentDidMount, cached 6h) — falls back to ~18,000 until it resolves.
+      remainderLabel: L.book.remainderLabel || 'Balance paid locally (approx.)',
+      remainderDue: (() => {
+        const remainderUsd = totalNum - Math.round(baseNum * 0.2);
+        const rate = this.state.idrRate || 18000;
+        const rp = Math.round(remainderUsd * rate / 1000) * 1000;
+        return '$' + remainderUsd + '  ≈  Rp ' + rp.toLocaleString('en-US');
+      })(),
 
       form: f,
       onName: e => this.set('name', e.target.value),
@@ -1358,6 +1399,8 @@ class Component extends DCLogic {
       })(),
       emailErr: (this.state.touched.email && !this.validEmail(f.email)) ? (W.errEmail || 'Enter a valid email') : '',
       phoneErr: (this.state.touched.phone && !this.validPhone(f.phone)) ? (W.errPhone || 'Enter a valid phone number') : '',
+      emailHintShow: !(this.state.touched.email && !this.validEmail(f.email)),
+      phoneHintShow: !(this.state.touched.phone && !this.validPhone(f.phone)),
       ageErr: (this.state.touched.age && f.age !== '' && !this.validAge(f.age)) ? (W.errAge || 'Age must be between 6 and 99') : '',
       emailInputStyle: inputStyle + ((this.state.touched.email && !this.validEmail(f.email)) ? ';border-color:#FFB454;background:rgba(255,180,84,.07)' : ''),
       phoneInputStyle: inputStyle + ((this.state.touched.phone && !this.validPhone(f.phone)) ? ';border-color:#FFB454;background:rgba(255,180,84,.07)' : ''),

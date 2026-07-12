@@ -8,8 +8,8 @@ window.SERVICES_DATA = {
   // rental is per person per rental day; deposit = approx. refundable security deposit per rented set (not charged upfront).
   sessionPricing: {
     surf: {
-      standard: { base: 70, extraPerson: 50, rental: 20, deposit: 100 },
-      advanced: { base: 80, extraPerson: 60 }
+      standard: { base: 80, extraPerson: 55, rental: 20, deposit: 100 },
+      advanced: { base: 90, extraPerson: 65 }
     },
     kite: { base: 140, extraPerson: 100, rental: 45, deposit: 400 },
     wing: { base: 160, extraPerson: 115, rental: 40, deposit: 350 },
@@ -17,9 +17,8 @@ window.SERVICES_DATA = {
   },
   // Multi-session discount: price per session decreases linearly with each additional session (1–5 sessions).
   // "standard" applies to every non-advanced booking (all disciplines); "advanced" is surf-only (levelOpts index 3).
-  // multiplier(n) = 1 - rate * (n - 1), applied to the single-session base/extraPerson price.
-  // Solved from: standard base 70→60/session at 3, →50/session at 5 (rate 1/14); extra 50→40 at 3, →30 at 5 (rate 0.1).
-  // Advanced base 80→70/session at 3, →60/session at 5 (rate 0.0625); extra 60→50 at 3, →40 at 5 (rate 1/12).
+  // multiplier(n) = 1 - rate * (n - 1), applied to the single-session base/extraPerson price. Rates carried over
+  // unchanged from the previous $70/$80 pricing — they're proportional discounts, not tied to the absolute price.
   packageMultipliers: {
     standard: { baseRate: 1/14, extraRate: 0.1 },
     advanced: { baseRate: 0.0625, extraRate: 1/12 }
