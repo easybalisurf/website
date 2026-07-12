@@ -739,7 +739,7 @@ class Component extends DCLogic {
   // will reach the instructors group. paymentStatus/paymentProvider below are
   // placeholders for that missing integration.
   submitOrderToAdminBot(f, summary, sessionPriceNum, totalNum, headcount) {
-    const WEBHOOK_URL = 'https://admin-bot-production-b400.up.railway.app'; // TODO: set real deployed URL
+    const WEBHOOK_URL = 'https://admin-bot-production-b400.up.railway.app/webhook/booking'; // TODO: set real deployed URL
     const WEBHOOK_SECRET = '3g5EeBawf25YH7TDBCNHJw9NSu5Xo8My'; // must match admin-bot's BOOKING_WEBHOOK_SECRET
     const addonsBreakdown = summary.slice(1).map(line => ({
       label: line.label,
