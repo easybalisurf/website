@@ -651,10 +651,10 @@
 <footer style="background:#08100d;border-top:1px solid rgba(97,255,208,.12)">
   <div class="wrap footer-grid" style="max-width:1280px;margin:0 auto;padding:64px 32px 40px;display:grid;grid-template-columns:1.6fr 1fr 1fr;gap:40px">
     <div>
-      <div class="logo-mark" style="font-family:'Antonio',sans-serif;font-weight:700;font-size:24px;letter-spacing:2px;transform-origin:0% 70%;width:max-content;color:#FFFFFF80">
+      <div class="logo-mark" style="font-family:'Antonio',sans-serif;font-weight:700;font-size:16px;letter-spacing:1.4px;transform-origin:0% 70%;width:max-content;color:#FFFFFF80">
         <sc-for list="{{ logoChars }}" as="lc" hint-placeholder-count="13"><span class="logo-char" style="color:#FFFFFF80">{{ lc.ch }}</span></sc-for>
       </div>
-      <p style="font-size:13px;margin:16px 0 0;color:#FFFFFF80">© 2026 EasyBali.surf · {{ t.foot.rights }}</p>
+      <p style="font-size:13px;margin:16px 0 0;color:#FFFFFF80">© 2026 EasyBali.surf<br>{{ t.foot.rights }}</p>
     </div>
     
     <div>
@@ -731,6 +731,41 @@ class Component extends DCLogic {
       this.setState({ heroLineDelays: delays });
     }
   };
+  // Posts the completed order to the admin bot, in the exact shape it expects
+  // (see admin-bot/db.js -> normalizeBookingPayload). IMPORTANT: this fires
+  // right after client-side validation today — before this goes live, wire it
+  // to fire only after a REAL PayPal capture succeeds server-side (or a
+  // confirmed crypto payment via the client bot), otherwise unpaid "orders"
+  // will reach the instructors group. paymentStatus/paymentProvider below are
+  // placeholders for that missing integration.
+  submitOrderToAdminBot(f, summary, sessionPriceNum, totalNum, headcount) {
+    const WEBHOOK_URL = 'https://<your-admin-bot-domain>/webhook/booking'; // TODO: set real deployed URL
+    const WEBHOOK_SECRET = 'REPLACE_WITH_BOOKING_WEBHOOK_SECRET'; // must match admin-bot's BOOKING_WEBHOOK_SECRET
+    const addonsBreakdown = summary.slice(1).map(line => ({
+      label: line.label,
+      amount: parseInt(String(line.amount).replace(/[^0-9]/g, ''), 10) || 0
+    }));
+    const payload = {
+      bookingId: 'EBS' + Date.now() + Math.random().toString(36).substr(2, 5).toUpperCase(),
+      fullName: f.name, phone: f.phone, email: f.email, age: f.age ? parseInt(f.age, 10) : null,
+      skillLevel: f.level, preferredLanguage: f.instructorLang, additionalInfo: f.note,
+      sport: 'surf', participants: headcount,
+      sessions: (f.sessions || []).map(s => ({ date: s.date, timeWindow: s.slot, spot: f.spot })),
+      sessionPrice: sessionPriceNum,
+      addonsBreakdown,
+      total: totalNum,
+      deposit: Math.round(sessionPriceNum * 0.2),
+      paymentStatus: 'COMPLETED', // placeholder — see note above
+      payerEmail: f.email,
+      paymentId: null,
+      paymentProvider: 'paypal'
+    };
+    fetch(WEBHOOK_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-Booking-Secret': WEBHOOK_SECRET },
+      body: JSON.stringify(payload)
+    }).catch(err => console.error('Admin bot webhook failed:', err));
+  }
   validEmail(v) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test((v||'').trim()); }
   validPhone(v) { const d = (v||'').replace(/[^\d]/g,''); return /^\+?[\d\s()-]{6,}$/.test((v||'').trim()) && d.length >= 8 && d.length <= 15; }
   validAge(v) { if (v === '' || v == null) return false; const n = Number(v); return Number.isInteger(n) && n >= 6 && n <= 99; }
@@ -1416,9 +1451,11 @@ class Component extends DCLogic {
         const okEmail = this.validEmail(f.email), okPhone = this.validPhone(f.phone), okAge = f.age === '' || this.validAge(f.age);
         if (!okEmail || !okPhone || !okAge) { this.setState({ touched: { email: true, phone: true, age: true } }); return; }
         this.setState({ submitted: true });
+        this.submitOrderToAdminBot(f, summary, baseNum, totalNum, headcount);
         const el = document.getElementById('book'); if (el) window.scrollTo({ top: el.offsetTop - 40, behavior: 'smooth' });
       },
       reset: () => this.setState(s => ({ submitted: false, step: 1, addons: { media:false, rental:false, transferTo:false, transferBack:false }, transferToFrom:'', transferBackFrom:'', form: { ...s.form, sessionCount: '1', sessions: [{ date:'', slot:'' }] } })),
+
     };
   }
 }
