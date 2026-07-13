@@ -692,7 +692,12 @@ class Component extends DCLogic {
     rentalQty: null, // null = not yet touched by the user; effective value defaults to headcount
     mediaSessions: [],
     transferToFrom: '', transferBackFrom: '',
-    form: { name:'', email:'', phone:'', age:'', sport:'', level:'', sessionCount:'1', sessions:[{date:'',slot:''}], people:'1', note:'', spot:'', instructorLang:'' },
+    // sport/level/instructorLang default to each dropdown's first visible option (matching
+    // the English UI this.state.lang starts on) so the correct value is sent even if the
+    // client never touches the field — a bare '' would send an empty/mismatched value while
+    // the select visually shows the first option and pricing already assumes it (see the
+    // lvlIdx<0→0 and sIdx<0→0 fallbacks in renderVals, which this keeps in sync with).
+    form: { name:'', email:'', phone:'', age:'', sport:'Surfing', level:'First timer', sessionCount:'1', sessions:[{date:'',slot:''}], people:'1', note:'', spot:'', instructorLang:'English' },
     touched: { email:false, phone:false, age:false, spot:false, dateAt:{}, slotAt:{} }
   };
 
@@ -739,8 +744,8 @@ class Component extends DCLogic {
   // will reach the instructors group. paymentStatus/paymentProvider below are
   // placeholders for that missing integration.
   submitOrderToAdminBot(f, summary, sessionPriceNum, totalNum, headcount) {
-    const WEBHOOK_URL = 'https://<your-admin-bot-domain>/webhook/booking'; // TODO: set real deployed URL
-    const WEBHOOK_SECRET = 'REPLACE_WITH_BOOKING_WEBHOOK_SECRET'; // must match admin-bot's BOOKING_WEBHOOK_SECRET
+    const WEBHOOK_URL = 'https://admin-bot-production-b400.up.railway.app/webhook/booking';
+    const WEBHOOK_SECRET = '3g5EeBawf25YH7TDBCNHJw9NSu5Xo8My';
     const addonsBreakdown = summary.slice(1).map(line => ({
       label: line.label,
       amount: parseInt(String(line.amount).replace(/[^0-9]/g, ''), 10) || 0
@@ -748,7 +753,9 @@ class Component extends DCLogic {
     const payload = {
       bookingId: 'EBS' + Date.now() + Math.random().toString(36).substr(2, 5).toUpperCase(),
       fullName: f.name, phone: f.phone, email: f.email, age: f.age ? parseInt(f.age, 10) : null,
-      skillLevel: f.level, preferredLanguage: f.instructorLang, additionalInfo: f.note,
+      // Fallback to the English default in case older localStorage-persisted state (from
+      // before this default fix) still has the pre-fix empty string.
+      skillLevel: f.level || 'First timer', preferredLanguage: f.instructorLang || 'English', additionalInfo: f.note,
       sport: 'surf', participants: headcount,
       sessions: (f.sessions || []).map(s => ({ date: s.date, timeWindow: s.slot, spot: f.spot })),
       // Which session dates the photo/video/drone add-on covers (from the media-sessions
