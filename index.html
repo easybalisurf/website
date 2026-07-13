@@ -747,6 +747,7 @@ class Component extends DCLogic {
     const WEBHOOK_URL = 'https://admin-bot-production-b400.up.railway.app/webhook/booking';
     const WEBHOOK_SECRET = '3g5EeBawf25YH7TDBCNHJw9NSu5Xo8My';
     const addonsBreakdown = summary.slice(1).map(line => ({
+      type: line.type,
       label: line.label,
       amount: parseInt(String(line.amount).replace(/[^0-9]/g, ''), 10) || 0
     }));
@@ -1280,10 +1281,10 @@ class Component extends DCLogic {
     const sessionLabel = [W.private, sportName, W.sessionWord].filter(Boolean).join(' ')
       + ' (' + (sessionsCount > 1 ? sessionsCount + 'x2h' : '2h') + ') x ' + headcount + ' ' + (headcount === 1 ? W.personWord : W.peopleWord);
     const summary = [{ label: sessionLabel, amount: '$' + baseNum, textColor: '#61FFD0', textWeight: '600', amountWeight: '700' }];
-    if (ad.media) summary.push({ label: W.media + (sessionsCount > 1 ? ' ×' + mediaCount : ''), amount: '$' + addM , textColor:'#FFFFFFCC', textWeight:'400', amountWeight:'500' });
-    if (ad.rental) summary.push({ label: W.rental + ' ' + rentalQty + ' ' + (rentalQty === 1 ? W.personWord : W.peopleWord) + ' ×' + sessionsCount + ' (2h)', amount: '$' + (rentalRate * rentalQty * sessionsCount) , textColor:'#FFFFFFCC', textWeight:'400', amountWeight:'500' });
-    if (transfersAvail && ad.transferTo && this.state.transferToFrom) summary.push({ label: W.transferRoute.replace('{a}', this.state.transferToFrom).replace('{b}', destName) + (transferDaysCount > 1 ? ' x' + transferDaysCount : ''), amount: '$' + ttNum , textColor:'#FFFFFFCC', textWeight:'400', amountWeight:'500' });
-    if (transfersAvail && ad.transferBack && this.state.transferBackFrom) summary.push({ label: W.transferRoute.replace('{a}', destName).replace('{b}', this.state.transferBackFrom) + (transferDaysCount > 1 ? ' x' + transferDaysCount : ''), amount: '$' + tbNum , textColor:'#FFFFFFCC', textWeight:'400', amountWeight:'500' });
+    if (ad.media) summary.push({ type:'media', label: W.media + (sessionsCount > 1 ? ' ×' + mediaCount : ''), amount: '$' + addM , textColor:'#FFFFFFCC', textWeight:'400', amountWeight:'500' });
+    if (ad.rental) summary.push({ type:'rental', label: W.rental + ' ' + rentalQty + ' ' + (rentalQty === 1 ? W.personWord : W.peopleWord) + ' ×' + sessionsCount + ' (2h)', amount: '$' + (rentalRate * rentalQty * sessionsCount) , textColor:'#FFFFFFCC', textWeight:'400', amountWeight:'500' });
+    if (transfersAvail && ad.transferTo && this.state.transferToFrom) summary.push({ type:'transferTo', label: W.transferRoute.replace('{a}', this.state.transferToFrom).replace('{b}', destName) + (transferDaysCount > 1 ? ' x' + transferDaysCount : ''), amount: '$' + ttNum , textColor:'#FFFFFFCC', textWeight:'400', amountWeight:'500' });
+    if (transfersAvail && ad.transferBack && this.state.transferBackFrom) summary.push({ type:'transferBack', label: W.transferRoute.replace('{a}', destName).replace('{b}', this.state.transferBackFrom) + (transferDaysCount > 1 ? ' x' + transferDaysCount : ''), amount: '$' + tbNum , textColor:'#FFFFFFCC', textWeight:'400', amountWeight:'500' });
 
     return {
       t: L,
