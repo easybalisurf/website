@@ -171,7 +171,7 @@
     <p style="{{ subhead }};text-align:center">{{ t.finder.sub }}</p>
     <h2 style="{{ h2Style }};text-align:center;margin:12px auto 0">{{ t.finder.h2 }}</h2>
     <p style="max-width:56ch;margin:18px auto 0;text-align:center;font-size:16px;line-height:1.6">{{ t.finder.lead }}</p>
-    <p style="text-align:center;margin:10px 0 0"><a href="surf-guide.html" style="font-size:14px;font-weight:500;color:#61FFD0">{{ t.finder.guideLink }} →</a></p>
+    <p style="text-align:center;margin:10px 0 0"><a href="Surf Guide.dc.html" style="font-size:14px;font-weight:500;color:#61FFD0">{{ t.finder.guideLink }} →</a></p>
 
     <!-- unified recommendation panel -->
     <div style="{{ glassPanel }};padding:28px;margin-top:40px">
@@ -639,7 +639,7 @@
               <button type="button" onClick="{{ back }}" style="{{ backBtn }}">← {{ w.back }}</button>
               <button type="submit" style="{{ nextBtn }}">{{ t.book.submit }}</button>
             </div>
-            <p style="font-size:12px;text-align:center;margin:14px 0 0;color:#FFFFFF80">{{ t.book.fineA }}<a href="terms-of-service.html" style="color:#61FFD0">{{ t.book.fineLink }}</a>{{ t.book.fineB }}</p>
+            <p style="font-size:12px;text-align:center;margin:14px 0 0;color:#FFFFFF80">{{ t.book.fineA }}<a href="Terms of Service.dc.html" style="color:#61FFD0">{{ t.book.fineLink }}</a>{{ t.book.fineB }}</p>
           </div>
         </sc-if>
       </form>
@@ -659,8 +659,8 @@
     
     <div>
       <div style="{{ footHead }}">{{ t.foot.company }}</div>
-      <a href="terms-of-service.html" style="{{ footLink }}">{{ t.foot.terms }}</a>
-      <a href="instructors.html" style="{{ footLink }}">{{ t.foot.forInstructors }}</a>
+      <a href="Terms of Service.dc.html" style="{{ footLink }}">{{ t.foot.terms }}</a>
+      <a href="Instructors.dc.html" style="{{ footLink }}">{{ t.foot.forInstructors }}</a>
     </div>
     <div>
       <div style="{{ footHead }}">{{ t.foot.contact }}</div>
@@ -739,8 +739,8 @@ class Component extends DCLogic {
   // will reach the instructors group. paymentStatus/paymentProvider below are
   // placeholders for that missing integration.
   submitOrderToAdminBot(f, summary, sessionPriceNum, totalNum, headcount) {
-    const WEBHOOK_URL = 'https://admin-bot-production-b400.up.railway.app/webhook/booking'; // TODO: set real deployed URL
-    const WEBHOOK_SECRET = '3g5EeBawf25YH7TDBCNHJw9NSu5Xo8My'; // must match admin-bot's BOOKING_WEBHOOK_SECRET
+    const WEBHOOK_URL = 'https://<your-admin-bot-domain>/webhook/booking'; // TODO: set real deployed URL
+    const WEBHOOK_SECRET = 'REPLACE_WITH_BOOKING_WEBHOOK_SECRET'; // must match admin-bot's BOOKING_WEBHOOK_SECRET
     const addonsBreakdown = summary.slice(1).map(line => ({
       label: line.label,
       amount: parseInt(String(line.amount).replace(/[^0-9]/g, ''), 10) || 0
@@ -751,6 +751,13 @@ class Component extends DCLogic {
       skillLevel: f.level, preferredLanguage: f.instructorLang, additionalInfo: f.note,
       sport: 'surf', participants: headcount,
       sessions: (f.sessions || []).map(s => ({ date: s.date, timeWindow: s.slot, spot: f.spot })),
+      // Which session dates the photo/video/drone add-on covers (from the media-sessions
+      // checkbox picker) — lets the admin bot show shoot days on the order card.
+      mediaDates: this.state.addons.media
+        ? (this.state.mediaSessions || []).length
+          ? (this.state.mediaSessions || []).map(idx => (f.sessions || [])[idx]?.date).filter(Boolean)
+          : (f.sessions || []).map(s => s.date)
+        : [],
       sessionPrice: sessionPriceNum,
       addonsBreakdown,
       total: totalNum,
