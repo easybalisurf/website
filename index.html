@@ -743,7 +743,7 @@ class Component extends DCLogic {
   // confirmed crypto payment via the client bot), otherwise unpaid "orders"
   // will reach the instructors group. paymentStatus/paymentProvider below are
   // placeholders for that missing integration.
-  submitOrderToAdminBot(f, summary, sessionPriceNum, totalNum, headcount) {
+  submitOrderToAdminBot(f, summary, sessionPriceNum, totalNum, headcount, sessionsWithAddons) {
     const WEBHOOK_URL = 'https://admin-bot-production-b400.up.railway.app/webhook/booking';
     const WEBHOOK_SECRET = '3g5EeBawf25YH7TDBCNHJw9NSu5Xo8My';
     const addonsBreakdown = summary.slice(1).map(line => ({
@@ -758,7 +758,7 @@ class Component extends DCLogic {
       // before this default fix) still has the pre-fix empty string.
       skillLevel: f.level || 'First timer', preferredLanguage: f.instructorLang || 'English', additionalInfo: f.note,
       sport: 'surf', participants: headcount,
-      sessions: (f.sessions || []).map(s => ({ date: s.date, timeWindow: s.slot, spot: f.spot })),
+      sessions: (sessionsWithAddons && sessionsWithAddons.length ? sessionsWithAddons : (f.sessions || []).map(s => ({ date: s.date, timeWindow: s.slot, spot: f.spot }))),
       // Which session dates the photo/video/drone add-on covers (from the media-sessions
       // checkbox picker) — lets the admin bot show shoot days on the order card.
       mediaDates: this.state.addons.media
@@ -1286,6 +1286,20 @@ class Component extends DCLogic {
     if (transfersAvail && ad.transferTo && this.state.transferToFrom) summary.push({ type:'transferTo', label: W.transferRoute.replace('{a}', this.state.transferToFrom).replace('{b}', destName) + (transferDaysCount > 1 ? ' x' + transferDaysCount : ''), amount: '$' + ttNum , textColor:'#FFFFFFCC', textWeight:'400', amountWeight:'500' });
     if (transfersAvail && ad.transferBack && this.state.transferBackFrom) summary.push({ type:'transferBack', label: W.transferRoute.replace('{a}', destName).replace('{b}', this.state.transferBackFrom) + (transferDaysCount > 1 ? ' x' + transferDaysCount : ''), amount: '$' + tbNum , textColor:'#FFFFFFCC', textWeight:'400', amountWeight:'500' });
 
+    // Per-session addon breakdown (for the admin bot's order card, which nests addons under
+    // each session date rather than showing one flat aggregated list) — same per-day rates
+    // used above, just attributed to the specific date(s) they apply to.
+    const sessionsWithAddons = sessions.map((s, i) => {
+      const lines = [];
+      if (s.date && s.slot) {
+        if (ad.rental) lines.push({ type:'rental', label: W.rental + ' ' + rentalQty + ' ' + (rentalQty === 1 ? W.personWord : W.peopleWord) + ' (2h)', amount: rentalRate * rentalQty });
+        if (transfersAvail && ad.transferTo && this.state.transferToFrom) lines.push({ type:'transferTo', label: W.transferRoute.replace('{a}', this.state.transferToFrom).replace('{b}', destName), amount: ttOne });
+        if (transfersAvail && ad.transferBack && this.state.transferBackFrom) lines.push({ type:'transferBack', label: W.transferRoute.replace('{a}', destName).replace('{b}', this.state.transferBackFrom), amount: tbOne });
+        if (ad.media && (!mediaSessions.length || mediaSessions.includes(i))) lines.push({ type:'media', label: W.media, amount: SVC.addonPricing.media });
+      }
+      return { date: s.date, timeWindow: s.slot, spot: f.spot, addons: lines };
+    });
+
     return {
       t: L,
       navStyle: (this.state.scrolled || this.state.menuOpen)
@@ -1471,7 +1485,7 @@ class Component extends DCLogic {
         const okEmail = this.validEmail(f.email), okPhone = this.validPhone(f.phone), okAge = f.age === '' || this.validAge(f.age);
         if (!okEmail || !okPhone || !okAge) { this.setState({ touched: { email: true, phone: true, age: true } }); return; }
         this.setState({ submitted: true });
-        this.submitOrderToAdminBot(f, summary, baseNum, totalNum, headcount);
+        this.submitOrderToAdminBot(f, summary, baseNum, totalNum, headcount, sessionsWithAddons);
         const el = document.getElementById('book'); if (el) window.scrollTo({ top: el.offsetTop - 40, behavior: 'smooth' });
       },
       reset: () => this.setState(s => ({ submitted: false, step: 1, addons: { media:false, rental:false, transferTo:false, transferBack:false }, transferToFrom:'', transferBackFrom:'', form: { ...s.form, sessionCount: '1', sessions: [{ date:'', slot:'' }] } })),
