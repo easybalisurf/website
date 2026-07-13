@@ -1262,9 +1262,12 @@ class Component extends DCLogic {
     const firstSlotted = sessions.find(s => s.slot);
     const transfersAvail = !!(f.spot && f.spot.trim() && firstSlotted);
     const destName = f.spot || reco.active.name;
+    // Transfers are billed per CALENDAR DAY, not per session — two sessions booked on the
+    // same date only need one round trip to the spot, not two.
+    const transferDaysCount = new Set(sessions.filter(s => s.date && s.slot).map(s => s.date)).size || 1;
     const ttOne = transfersAvail && ad.transferTo && this.state.transferToFrom ? this.transferPrice(this.state.transferToFrom, destName) : 0;
     const tbOne = transfersAvail && ad.transferBack && this.state.transferBackFrom ? this.transferPrice(this.state.transferBackFrom, destName) : 0;
-    const ttNum = ttOne * sessionsCount, tbNum = tbOne * sessionsCount;
+    const ttNum = ttOne * transferDaysCount, tbNum = tbOne * transferDaysCount;
     const baseNum = perSessionBase * sessionsCount + perSessionExtra * sessionsCount * (headcount - 1);
     const rentalRate = equipTier.rental;
     const rentalQty = headcount === 1 ? 1 : Math.min(Math.max(1, this.state.rentalQty ?? headcount), headcount);
@@ -1279,8 +1282,8 @@ class Component extends DCLogic {
     const summary = [{ label: sessionLabel, amount: '$' + baseNum, textColor: '#61FFD0', textWeight: '600', amountWeight: '700' }];
     if (ad.media) summary.push({ label: W.media + (sessionsCount > 1 ? ' ×' + mediaCount : ''), amount: '$' + addM , textColor:'#FFFFFFCC', textWeight:'400', amountWeight:'500' });
     if (ad.rental) summary.push({ label: W.rental + ' ' + rentalQty + ' ' + (rentalQty === 1 ? W.personWord : W.peopleWord) + ' ×' + sessionsCount + ' (2h)', amount: '$' + (rentalRate * rentalQty * sessionsCount) , textColor:'#FFFFFFCC', textWeight:'400', amountWeight:'500' });
-    if (transfersAvail && ad.transferTo && this.state.transferToFrom) summary.push({ label: W.transferRoute.replace('{a}', this.state.transferToFrom).replace('{b}', destName) + (sessionsCount > 1 ? ' x' + sessionsCount : ''), amount: '$' + ttNum , textColor:'#FFFFFFCC', textWeight:'400', amountWeight:'500' });
-    if (transfersAvail && ad.transferBack && this.state.transferBackFrom) summary.push({ label: W.transferRoute.replace('{a}', destName).replace('{b}', this.state.transferBackFrom) + (sessionsCount > 1 ? ' x' + sessionsCount : ''), amount: '$' + tbNum , textColor:'#FFFFFFCC', textWeight:'400', amountWeight:'500' });
+    if (transfersAvail && ad.transferTo && this.state.transferToFrom) summary.push({ label: W.transferRoute.replace('{a}', this.state.transferToFrom).replace('{b}', destName) + (transferDaysCount > 1 ? ' x' + transferDaysCount : ''), amount: '$' + ttNum , textColor:'#FFFFFFCC', textWeight:'400', amountWeight:'500' });
+    if (transfersAvail && ad.transferBack && this.state.transferBackFrom) summary.push({ label: W.transferRoute.replace('{a}', destName).replace('{b}', this.state.transferBackFrom) + (transferDaysCount > 1 ? ' x' + transferDaysCount : ''), amount: '$' + tbNum , textColor:'#FFFFFFCC', textWeight:'400', amountWeight:'500' });
 
     return {
       t: L,
