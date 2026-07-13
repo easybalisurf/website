@@ -6,7 +6,7 @@ window.SITE_TEXT = {
       en: {
         nav: { forecast:'Forecast', disciplines:'Disciplines', why:'Why us', coaches:'Coaches', how:'How it works', book:'Book a session' },
         hero: { eyebrow:'Bali · Uluwatu · Canggu · Nusa Lembongan', h1a:'RIDE THE ', h1accent:'BEST', h1b:' WAVES OF THE ISLAND',
-          lead:'Book certified local instructors for surfing, kitesurfing, wing foiling and SUP. Real conditions, small groups, and the exact break that matches your level — every session tailored to you.',
+          lead:'Book certified instructors for surfing, kitesurfing, wing foiling and SUP. Real conditions, small groups, and the exact break that matches your level — every session tailored to you.',
           ctaBook:'Book your session →', ctaExplore:'Why us' },
         stats: [ {num:'12+',label:'Years coaching'}, {num:'4.9★',label:'Avg. rating'}, {num:'6',label:'Local breaks'}, {num:'2k+',label:'Riders taught'} ],
         sports: { sub:'What we teach', h2:'Pick your discipline', lead:'From your first whitewater ride to advanced foiling, our coaches meet you exactly where you are.',
@@ -71,7 +71,7 @@ window.SITE_TEXT = {
       ru: {
         nav: { forecast:'Прогноз', disciplines:'Дисциплины', why:'Почему мы', coaches:'Тренеры', how:'Как это работает', book:'Забронировать' },
         hero: { eyebrow:'Бали · Улувату · Чангу · Нуса Лембонган', h1a:'ЛОВИ ', h1accent:'ЛУЧШИЕ', h1b:' ВОЛНЫ ОСТРОВА',
-          lead:'Бронируй сертифицированных местных инструкторов по сёрфингу, кайтсёрфингу, вингфойлу и SUP. Реальные условия, малые группы и именно тот спот, что подходит твоему уровню — каждая тренировка под тебя.',
+          lead:'Бронируй сертифицированных инструкторов по сёрфингу, кайтсёрфингу, вингфойлу и SUP. Реальные условия, малые группы и именно тот спот, что подходит твоему уровню — каждая тренировка под тебя.',
           ctaBook:'Забронировать →', ctaExplore:'Почему мы' },
         stats: [ {num:'12+',label:'лет опыта'}, {num:'4.9★',label:'средний рейтинг'}, {num:'6',label:'споты'}, {num:'2k+',label:'учеников'} ],
         sports: { sub:'Чему мы учим', h2:'Выбери свою дисциплину', lead:'От первой волны до продвинутого фойла — наши тренеры подстроятся именно под твой уровень.',

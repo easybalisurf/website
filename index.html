@@ -1401,8 +1401,10 @@ class Component extends DCLogic {
       transferOpts: Object.keys(this.transferOrigins()),
       rentalPrice: '$' + rentalRate,
       mediaPrice: '$' + SVC.addonPricing.media + (sessionsCount > 1 ? ' ' + W.perDay : ''),
-      ttPrice: ad.transferTo ? (this.state.transferToFrom ? '$' + ttNum + ' · ~' + this.transferEtaMin(this.state.transferToFrom, destName) + ' ' + (W.minAbbr || 'min') : '—') : '',
-      tbPrice: ad.transferBack ? (this.state.transferBackFrom ? '$' + tbNum + ' · ~' + this.transferEtaMin(this.state.transferBackFrom, destName) + ' ' + (W.minAbbr || 'min') : '—') : '',
+      // Checkbox rows show the price of a SINGLE transfer leg (ttOne/tbOne) — the summary
+      // below is where the ×transferDaysCount multiplication is actually shown.
+      ttPrice: ad.transferTo ? (this.state.transferToFrom ? '$' + ttOne + ' · ~' + this.transferEtaMin(this.state.transferToFrom, destName) + ' ' + (W.minAbbr || 'min') : '—') : '',
+      tbPrice: ad.transferBack ? (this.state.transferBackFrom ? '$' + tbOne + ' · ~' + this.transferEtaMin(this.state.transferBackFrom, destName) + ' ' + (W.minAbbr || 'min') : '—') : '',
       summary, orderTotal: '$' + totalNum,
       depositDue: '$' + Math.round(baseNum * 0.2),
       depositLabel: (L.book.sessionDeposit || 'Deposit due (20% of session price)'),
