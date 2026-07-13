@@ -484,23 +484,6 @@
           <div>
             <div style="display:flex;flex-direction:column;gap:12px">
               <div>
-                <div onClick="{{ toggleMedia }}" style="{{ aMedia.row }}">
-                  <span style="{{ aMedia.box }}">{{ aMedia.mark }}</span>
-                  <span style="flex:1;font-size:15px;color:#fff">{{ w.media }}</span>
-                  <span style="{{ addonPrice }}">{{ mediaPrice }}</span>
-                </div>
-                <sc-if value="{{ mediaOpen }}" hint-placeholder-val="{{ false }}">
-                  <div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:10px;padding:12px 14px;border-radius:12px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1)">
-                    <span style="flex:1 0 100%;font-size:13px;color:#FFFFFFBD">{{ w.mediaWhich }}</span>
-                    <sc-for list="{{ mediaSessionOpts }}" as="ms" hint-placeholder-count="1">
-                      <label onClick="{{ ms.toggle }}" style="{{ ms.chipStyle }}">
-                        <span style="{{ ms.box }}">{{ ms.mark }}</span>{{ ms.label }}
-                      </label>
-                    </sc-for>
-                  </div>
-                </sc-if>
-              </div>
-              <div>
                 <div onClick="{{ toggleRental }}" style="{{ aRental.row }}">
                   <span style="{{ aRental.box }}">{{ aRental.mark }}</span>
                   <span style="flex:1;font-size:15px;color:#fff">{{ w.rental }}</span>
@@ -551,6 +534,23 @@
               <sc-if value="{{ noTransfers }}" hint-placeholder-val="{{ false }}">
                 <p style="font-size:12px;line-height:1.5;color:#FFFFFF80;margin:2px 2px 0">{{ w.transferLocked }}</p>
               </sc-if>
+              <div>
+                <div onClick="{{ toggleMedia }}" style="{{ aMedia.row }}">
+                  <span style="{{ aMedia.box }}">{{ aMedia.mark }}</span>
+                  <span style="flex:1;font-size:15px;color:#fff">{{ w.media }}</span>
+                  <span style="{{ addonPrice }}">{{ mediaPrice }}</span>
+                </div>
+                <sc-if value="{{ mediaOpen }}" hint-placeholder-val="{{ false }}">
+                  <div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:10px;padding:12px 14px;border-radius:12px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1)">
+                    <span style="flex:1 0 100%;font-size:13px;color:#FFFFFFBD">{{ w.mediaWhich }}</span>
+                    <sc-for list="{{ mediaSessionOpts }}" as="ms" hint-placeholder-count="1">
+                      <label onClick="{{ ms.toggle }}" style="{{ ms.chipStyle }}">
+                        <span style="{{ ms.box }}">{{ ms.mark }}</span>{{ ms.label }}
+                      </label>
+                    </sc-for>
+                  </div>
+                </sc-if>
+              </div>
             </div>
             <div style="margin-top:22px;padding:18px;border-radius:16px;background:rgba(97,255,208,.07);border:1px solid rgba(97,255,208,.25)">
               <div style="font-size:12px;letter-spacing:.5px;text-transform:uppercase;color:#61FFD0;font-weight:600;margin-bottom:14px">{{ w.summaryTitle }}</div>
