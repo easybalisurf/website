@@ -12,6 +12,9 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
 <link href="https://fonts.googleapis.com/css2?family=Antonio:wght@400;500;600;700&amp;family=Audiowide&amp;family=Inter:wght@300;400;500;600&amp;display=swap" rel="stylesheet">
+
+
+
 <!-- Content/data split for easy editing:
      i18n.js          — all site + booking-wizard copy, per language (edit here to add a language or change any text)
      services-data.js — session pricing, add-on fees, transfer geo, surf-spot database (edit here to add service packages / spots)
@@ -171,7 +174,7 @@
     <p style="{{ subhead }};text-align:center">{{ t.finder.sub }}</p>
     <h2 style="{{ h2Style }};text-align:center;margin:12px auto 0">{{ t.finder.h2 }}</h2>
     <p style="max-width:56ch;margin:18px auto 0;text-align:center;font-size:16px;line-height:1.6">{{ t.finder.lead }}</p>
-    <p style="text-align:center;margin:10px 0 0"><a href="Surf Guide.dc.html" style="font-size:14px;font-weight:500;color:#61FFD0">{{ t.finder.guideLink }} →</a></p>
+    <p style="text-align:center;margin:10px 0 0"><a href="surf-guide.html" style="font-size:14px;font-weight:500;color:#61FFD0">{{ t.finder.guideLink }} →</a></p>
 
     <!-- unified recommendation panel -->
     <div style="{{ glassPanel }};padding:28px;margin-top:40px">
@@ -639,7 +642,7 @@
               <button type="button" onClick="{{ back }}" style="{{ backBtn }}">← {{ w.back }}</button>
               <button type="submit" style="{{ nextBtn }}">{{ t.book.submit }}</button>
             </div>
-            <p style="font-size:12px;text-align:center;margin:14px 0 0;color:#FFFFFF80">{{ t.book.fineA }}<a href="Terms of Service.dc.html" style="color:#61FFD0">{{ t.book.fineLink }}</a>{{ t.book.fineB }}</p>
+            <p style="font-size:12px;text-align:center;margin:14px 0 0;color:#FFFFFF80">{{ t.book.fineA }}<a href="terms-of-service.html" style="color:#61FFD0">{{ t.book.fineLink }}</a>{{ t.book.fineB }}</p>
           </div>
         </sc-if>
       </form>
@@ -659,8 +662,8 @@
     
     <div>
       <div style="{{ footHead }}">{{ t.foot.company }}</div>
-      <a href="Terms of Service.dc.html" style="{{ footLink }}">{{ t.foot.terms }}</a>
-      <a href="Instructors.dc.html" style="{{ footLink }}">{{ t.foot.forInstructors }}</a>
+      <a href="terms-of-service.html" style="{{ footLink }}">{{ t.foot.terms }}</a>
+      <a href="instructors.html" style="{{ footLink }}">{{ t.foot.forInstructors }}</a>
     </div>
     <div>
       <div style="{{ footHead }}">{{ t.foot.contact }}</div>
