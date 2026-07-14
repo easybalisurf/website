@@ -11,10 +11,7 @@
 <helmet>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
-<link href="https://fonts.googleapis.com/css2?family=Antonio:wght@400;500;600;700&amp;family=Audiowide&amp;family=Inter:wght@300;400;500;600&amp;display=swap" rel="stylesheet">
-
-
-
+<link href="https://fonts.googleapis.com/css2?family=Antonio:wght@400;500;600;700&amp;family=Oswald:wght@400;500;600;700&amp;family=Audiowide&amp;family=Inter:wght@300;400;500;600&amp;display=swap" rel="stylesheet">
 <!-- Content/data split for easy editing:
      i18n.js          — all site + booking-wizard copy, per language (edit here to add a language or change any text)
      services-data.js — session pricing, add-on fees, transfer geo, surf-spot database (edit here to add service packages / spots)
@@ -29,6 +26,9 @@
   a:hover{color:#8affe0}
   ::selection{background:#61FFD0;color:#08100d}
   input,select,textarea{font-family:'Inter',sans-serif}
+  /* Antonio has no Cyrillic glyphs — browsers fall back to an oversized generic serif in Russian.
+     Oswald is a condensed sans matching Antonio's proportions and supports Cyrillic. */
+  html[lang="ru"] [style*="Antonio"]{font-family:'Oswald',sans-serif !important}
   input[type="date"]{color-scheme:dark}
   input[type="date"]::-webkit-calendar-picker-indicator{position:absolute;right:0;top:0;width:100%;height:100%;opacity:0;margin:0;cursor:pointer}
   input[type="date"]{position:relative}
@@ -174,7 +174,7 @@
     <p style="{{ subhead }};text-align:center">{{ t.finder.sub }}</p>
     <h2 style="{{ h2Style }};text-align:center;margin:12px auto 0">{{ t.finder.h2 }}</h2>
     <p style="max-width:56ch;margin:18px auto 0;text-align:center;font-size:16px;line-height:1.6">{{ t.finder.lead }}</p>
-    <p style="text-align:center;margin:10px 0 0"><a href="surf-guide.html" style="font-size:14px;font-weight:500;color:#61FFD0">{{ t.finder.guideLink }} →</a></p>
+    <p style="text-align:center;margin:10px 0 0"><a href="{{ guideHref }}" style="font-size:14px;font-weight:500;color:#61FFD0">{{ t.finder.guideLink }} →</a></p>
 
     <!-- unified recommendation panel -->
     <div style="{{ glassPanel }};padding:28px;margin-top:40px">
@@ -846,6 +846,7 @@ class Component extends DCLogic {
   componentDidMount() {
     this._raf = null;
     this._wxFail = {};
+    document.documentElement.lang = this.state.lang;
     this.fetchIdrRate();
     setTimeout(this.measureHeroLines, 150); // after webfont/layout settles
     this._onHeroResize = () => { clearTimeout(this._heroResizeT); this._heroResizeT = setTimeout(this.measureHeroLines, 120); };
@@ -880,6 +881,7 @@ class Component extends DCLogic {
     this.maybeFetch();
   }
   componentDidUpdate(prevProps, prevState) {
+    if (prevState.lang !== this.state.lang) document.documentElement.lang = this.state.lang;
     const a = prevState && prevState.explore, b = this.state.explore;
     if (!a || a.sport !== b.sport || a.level !== b.level || a.spot !== b.spot) this.maybeFetch();
   }

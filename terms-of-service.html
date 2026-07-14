@@ -11,7 +11,7 @@
 <helmet>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
-<link href="https://fonts.googleapis.com/css2?family=Antonio:wght@400;500;600;700&amp;family=Audiowide&amp;family=Inter:wght@300;400;500;600&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Antonio:wght@400;500;600;700&amp;family=Oswald:wght@400;500;600;700&amp;family=Audiowide&amp;family=Inter:wght@300;400;500;600&amp;display=swap" rel="stylesheet">
 <script src="./i18n.js"></script>
 <style>
   *{box-sizing:border-box}
@@ -20,6 +20,7 @@
   a:hover{color:#8affe0}
   ::selection{background:#61FFD0;color:#08100d}
   h2{font-family:'Antonio',sans-serif;font-weight:600;color:#fff;font-size:22px;margin:44px 0 12px}
+  html[lang="ru"] h2,html[lang="ru"] [style*="Antonio"]{font-family:'Oswald',sans-serif !important}
   p,li{font-size:15px;line-height:1.7}
   li{margin-bottom:8px}
 </style>
@@ -71,6 +72,7 @@ class Component extends DCLogic {
   }
   renderVals() {
     const lang = this.urlLang();
+    if (typeof document !== 'undefined') document.documentElement.lang = lang;
     const D = window.TERMS_TEXT || {};
     const t = D[lang] || D.en;
     return {
