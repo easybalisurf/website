@@ -642,7 +642,7 @@
               <button type="button" onClick="{{ back }}" style="{{ backBtn }}">← {{ w.back }}</button>
               <button type="submit" style="{{ nextBtn }}">{{ t.book.submit }}</button>
             </div>
-            <p style="font-size:12px;text-align:center;margin:14px 0 0;color:#FFFFFF80">{{ t.book.fineA }}<a href="terms-of-service.html" style="color:#61FFD0">{{ t.book.fineLink }}</a>{{ t.book.fineB }}</p>
+            <p style="font-size:12px;text-align:center;margin:14px 0 0;color:#FFFFFF80">{{ t.book.fineA }}<a href="{{ termsHref }}" style="color:#61FFD0">{{ t.book.fineLink }}</a>{{ t.book.fineB }}</p>
           </div>
         </sc-if>
       </form>
@@ -662,7 +662,7 @@
     
     <div>
       <div style="{{ footHead }}">{{ t.foot.company }}</div>
-      <a href="terms-of-service.html" style="{{ footLink }}">{{ t.foot.terms }}</a>
+      <a href="{{ termsHref }}" style="{{ footLink }}">{{ t.foot.terms }}</a>
       <a href="instructors.html" style="{{ footLink }}">{{ t.foot.forInstructors }}</a>
     </div>
     <div>
@@ -687,7 +687,7 @@ class Component extends DCLogic {
     openFaq: 0,
     menuOpen: false,
     langMenuOpen: false,
-    lang: 'en',
+    lang: (typeof window !== 'undefined' && ['en','ru','zh','ko','fr','de','es'].includes(new URLSearchParams(window.location.search).get('lang'))) ? new URLSearchParams(window.location.search).get('lang') : 'en',
     wx: {},
     explore: { sport: 0, level: 0, date: '', spot: '', slot: '' },
     step: 1,
@@ -1346,6 +1346,8 @@ class Component extends DCLogic {
       onInstructorLang: e => this.set('instructorLang', e.target.value),
       openDatePicker: e => { if (e.target.showPicker) { try { e.target.showPicker(); } catch (err) {} } },
       reco, exSportVal, exLevelVal, onExSport, onExLevel, bookThis,
+      guideHref: 'surf-guide.html?lang=' + this.state.lang,
+      termsHref: 'terms-of-service.html?lang=' + this.state.lang,
 
       faqs: L.faq.list.map((item, i) => {
         const open = this.state.openFaq === i;
