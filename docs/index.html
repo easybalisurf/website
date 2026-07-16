@@ -15,8 +15,9 @@
 <link href="https://fonts.googleapis.com/css2?family=Antonio:wght@400;500;600;700&amp;family=Audiowide&amp;family=Inter:wght@300;400;500;600&amp;display=swap" rel="stylesheet">
 <style>
   *{box-sizing:border-box}
-  html{margin:0;overflow:hidden}
-  body{margin:0;color:#FFFFFFBD;font-family:'Inter',system-ui,sans-serif;-webkit-font-smoothing:antialiased;overflow:hidden}
+  html{margin:0;overflow-x:hidden}
+  body{margin:0;color:#FFFFFFBD;font-family:'Inter',system-ui,sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden;scrollbar-width:none}
+  body::-webkit-scrollbar{display:none}
   a{color:#61FFD0;text-decoration:none}
   a:hover{color:#8affe0}
   ::selection{background:#61FFD0;color:#08100d}
@@ -38,7 +39,7 @@
 </style>
 </helmet>
 
-<div style="position:relative;height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px;text-align:center;overflow:hidden">
+<div style="position:relative;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px;text-align:center;overflow:hidden">
 
   <div style="position:absolute;inset:0;background:url('https://images.unsplash.com/photo-1654137065487-cce388f2c58f?fm=jpg&q=78&w=1600&auto=format&fit=crop&ixlib=rb-4.1.0') center/cover"></div>
   <div style="position:absolute;inset:0;background:radial-gradient(ellipse at 50% 0%,rgba(11,42,46,.88),rgba(6,20,23,.92) 60%,rgba(3,9,11,.95))"></div>
