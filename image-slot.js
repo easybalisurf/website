@@ -1,4 +1,5 @@
 // @ds-adherence-ignore -- omelette starter scaffold (raw elements/hex/px by design)
+// Copied omelette starter. Re-running copy_starter_component with this kind overwrites this file with the latest version (page content is unaffected).
 /* BEGIN USAGE */
 /**
  * <image-slot> — user-fillable image placeholder.
@@ -13,9 +14,11 @@
  * design_canvas.jsx, so the filled slot shows on share links, downloaded
  * zips, and PPTX export. Outside the omelette runtime the slot is read-only.
  *
- * The host bridge only allows sidecar writes at the project root, so the
- * HTML that uses this component is assumed to live at the project root too
- * (same constraint as design_canvas.jsx).
+ * The sidecar is a SIBLING of the HTML file that uses this component: the
+ * read is a document-relative fetch, and the host resolves the bridge's
+ * sidecar writes into the previewed file's directory to match (same
+ * contract as design_canvas.jsx). Pages in the same directory share one
+ * sidecar; keep slot ids distinct across them.
  *
  * Attributes:
  *   id           Persistence key. REQUIRED for the drop to survive reload —
@@ -70,6 +73,10 @@
  * layering content above a slot (full-bleed layouts), make the overlay
  * click-through — pointer-events: none on scrims/text plates, re-enabled
  * on interactive children — so the slot's hover controls stay reachable.
+ * Keep the slot's bottom-left corner visually clear as well: the credit
+ * overlay renders there, and a dark fade or text plate covering it hides
+ * the attribution Unsplash's terms require — end the fade above that
+ * corner, or keep it nearly transparent where the credit sits.
  *
  * Usage:
  *   <div style="position:relative;width:100%;height:100%">      <!-- full-bleed: -->
@@ -352,6 +359,21 @@
     '.ctl button:hover{background:rgba(0,0,0,.8)}' +
     '.err{position:absolute;left:8px;bottom:8px;right:8px;color:#b3261e;font-size:11px;' +
     '  background:rgba(255,255,255,.85);padding:4px 6px;border-radius:5px;pointer-events:none}' +
+    // Replacement in flight: after a src swap the browser keeps painting
+    // the PREVIOUS image until the new one decodes, so a Replace would
+    // flash the old photo and then pop. Hide the stale frame (visibility,
+    // not display — _applyView geometry still applies) and spin until the
+    // new image reports in (load/error clears data-swapping).
+    ':host([data-swapping]) .frame img{visibility:hidden}' +
+    '.loading{position:absolute;inset:0;display:none;align-items:center;' +
+    '  justify-content:center;pointer-events:none}' +
+    ':host([data-swapping]) .loading{display:flex}' +
+    '.loading::after{content:"";width:22px;height:22px;border-radius:50%;' +
+    '  border:2px solid rgba(0,0,0,.12);border-top-color:rgba(0,0,0,.45);' +
+    '  animation:om-slot-spin .7s linear infinite}' +
+    '@keyframes om-slot-spin{to{transform:rotate(360deg)}}' +
+    // Reduced motion: the static two-tone ring still reads as "working".
+    '@media (prefers-reduced-motion:reduce){.loading::after{animation:none}}' +
     '.credit{position:absolute;left:6px;bottom:6px;max-width:calc(100% - 12px);display:none;' +
     '  padding:3px 7px;border-radius:5px;background:rgba(0,0,0,.55);color:#fff;' +
     '  font:10px/1.2 system-ui,-apple-system,sans-serif;text-decoration:none;' +
@@ -362,6 +384,19 @@
     '.credit a{color:inherit;text-decoration:none}' +
     '.credit a:hover,.credit a:focus-visible{text-decoration:underline}' +
     ':host([data-filled][data-credit]) .credit{display:block}' +
+    // Exports must ship JUST the image — no hover controls, no credit chip
+    // (the host marks <html data-om-exporting> for the capture window; the
+    // page-level hide script can't reach shadow DOM, this rule can).
+    ':host-context([data-om-exporting]) .ctl,' +
+    ':host-context([data-om-exporting]) .credit{display:none !important}' +
+    // No export-window mask rules here on purpose: the export capture
+    // releases the replacement mask by REMOVING data-swapping (the
+    // shadow-root pass in pages/export/shared.ts HIDE_EXPORT_CHROME_SCRIPT)
+    // — attribute removal works in every engine (:host-context is
+    // Chromium-only), is scoped by construction to slots actually
+    // mid-swap, and hides the spinner through the same gate. A masked img
+    // would otherwise be silently dropped from PPTX decks (the capture
+    // walk skips visibility:hidden imgs).
     // Attribution error tile: REPLACES the photo when an Unsplash src has
     // no credit attribute — rendering the photo uncredited is the terms
     // violation, so the photo must not appear at all.
@@ -461,6 +496,7 @@
         '    <div class="sub">or <u>browse files</u></div></div>' +
         '  <div class="attr-error" part="attribution-error">' + warnIcon +
         '    <div class="cap">This photo needs attribution</div></div>' +
+        '  <div class="loading" part="loading"></div>' +
         '  <div class="ring" part="ring"></div>' +
         '</div>' +
         // Outside .frame, like .spill/.ctl — the frame's overflow:hidden +
@@ -468,12 +504,16 @@
         // A SPAN, not an <a>: the prescribed Unsplash credit holds two links
         // (photographer + Unsplash), built per-render in _render().
         '<span class="credit" part="credit"></span>' +
-        '<div class="spill" popover="manual">' +
+        '<div class="spill" popover="manual" data-dc-edit-transparent>' +
         '  <img class="ghost" alt="" draggable="false">' +
         '  <div class="handle" data-c="nw"></div><div class="handle" data-c="ne"></div>' +
         '  <div class="handle" data-c="sw"></div><div class="handle" data-c="se"></div>' +
         '</div>' +
-        '<div class="ctl" popover="manual"><button data-act="replace" title="Replace image">Replace</button>' +
+        // data-dc-edit-transparent: the DC editor's edit-mode picker lets
+        // clicks through for chrome marked with it (EDIT_TRANSPARENT_SEL)
+        // — without it, Replace/Edit clicks in Edit mode are swallowed by
+        // element selection and the controls look dead.
+        '<div class="ctl" popover="manual" data-dc-edit-transparent><button data-act="replace" title="Replace image">Replace</button>' +
         '  <button data-act="edit" title="Reframe image">Edit</button></div>' +
         '<input type="file" accept="' + ACCEPT.join(',') + '" hidden>';
       this._frame = root.querySelector('.frame');
@@ -494,6 +534,25 @@
       this._input = root.querySelector('input');
       this._depth = 0;
       this._gen = 0;
+      // Encode-in-flight marker (the owning _ingest generation): while set,
+      // the same-src "nothing in flight" clear in _render must not fire —
+      // the stored value still points at the OLD image until the encode
+      // lands, so that clear would unmask the stale image mid-replace.
+      this._swapGen = 0;
+      // Render-owned swap in flight: set when _render assigns a new src,
+      // cleared only by the img's own load/error (or the empty branch).
+      // img.complete CANNOT stand in for this — setting src only QUEUES
+      // the current-request swap (a microtask), so synchronously after an
+      // assignment, complete still reports the OLD settled request. The
+      // pick path does exactly that: the host sets src, credit, and
+      // credit-href back-to-back in one task, and renders #2/#3 would
+      // read the stale complete === true and drop the mask one render
+      // after it was set.
+      this._loadPending = false;
+      // See _render's empty branch: a transient attribution-error wipe of a
+      // showing image must make the follow-up render a replacement (spinner),
+      // not a first fill (blank frame).
+      this._hidShowing = false;
       this._view = { s: 1, x: 0, y: 0 };
       this._subFn = () => this._render();
       // Shadow-DOM listeners live with the shadow DOM — bound once here so
@@ -526,7 +585,19 @@
       });
       // naturalWidth/Height aren't known until load — re-apply so the cover
       // baseline is computed from real dimensions, not the 100%×100% fallback.
-      this._img.addEventListener('load', () => this._applyView());
+      // load/error also release the replacement-in-flight mask (via the
+      // single discipline in _releaseMask): the swap is only revealed once
+      // the new image can actually paint (on error the frame shows its
+      // background, same as a fresh slot with a broken src).
+      this._img.addEventListener('load', () => {
+        this._loadPending = false;
+        this._releaseMask(true);
+        this._applyView();
+      });
+      this._img.addEventListener('error', () => {
+        this._loadPending = false;
+        this._releaseMask(true);
+      });
       // Gated only on editable — any filled slot can be repositioned/scaled,
       // regardless of fit. Share links (no writeFile) stay static.
       this.addEventListener('dblclick', (e) => {
@@ -787,6 +858,18 @@
       // newer drop during that window would be clobbered when this await
       // resumes — bump + capture a generation so stale encodes bail.
       const gen = ++this._gen;
+      // Replacing a shown image: surface the swap through the encode too,
+      // not just the decode — otherwise the old photo sits there with no
+      // feedback while the canvas re-encode runs. An empty slot keeps its
+      // placeholder (no spinner) until the encode lands, as before.
+      // _swapGen guards the mask against re-renders DURING the encode
+      // (pointerenter, ResizeObserver, another slot's store write): the
+      // stored value still resolves to the old image there, so _render's
+      // same-src clear would otherwise unmask it mid-replace.
+      if (this.hasAttribute('data-filled')) {
+        this.setAttribute('data-swapping', '');
+        this._swapGen = gen;
+      }
       try {
         const w = this.clientWidth || this.offsetWidth || MAX_DIM;
         const url = await toDataUrl(file, w);
@@ -794,6 +877,10 @@
         // Only exit reframe once the new image is in hand — a rejected type
         // or decode failure leaves the in-progress crop untouched.
         this._exitReframe(false);
+        // Clear BEFORE setSlot: its synchronous re-render must see no
+        // pending encode, so a byte-identical re-upload (same data URL, no
+        // load event coming) still clears the mask via the complete branch.
+        this._swapGen = 0;
         const val = { u: url, s: 1, x: 0, y: 0 };
         setSlot(this.id || '', val);
         // Keep a session-local copy for id-less slots so the drop still
@@ -801,6 +888,11 @@
         if (!this.id) { this._local = val; this._render(); }
       } catch (err) {
         if (gen !== this._gen) return;
+        this._swapGen = 0;
+        // Reveal the kept old image — unless another replacement (a
+        // remote pick's src swap) is still in flight, in which case the
+        // mask stays until THAT image settles (its load/error releases).
+        this._releaseMask();
         this._setError('Could not read that image.');
         console.warn('<image-slot> ingest failed:', err);
       }
@@ -821,6 +913,29 @@
     // _geom): contain starts fully-visible, cover starts frame-filling.
     _reframes() {
       return this.hasAttribute('data-filled');
+    }
+
+    // The single release discipline for the replacement-in-flight mask
+    // (data-swapping). The mask comes off only when BOTH hold:
+    //  - no encode is pending (_swapGen) — mid-encode the stored value
+    //    still resolves to the old image, so any reveal paints it;
+    //  - the frame img has settled on its current src — an unsettled src
+    //    means some replacement is still in flight (e.g. a remote pick),
+    //    whoever started it, and revealing would paint the previous
+    //    frame. The load/error listeners pass settled=true (the event IS
+    //    the settlement signal, per spec complete is true by then);
+    //    other callers rely on the complete flag (covers loaded AND
+    //    failed).
+    // Every release path funnels through here EXCEPT _render's empty
+    // branch (the img is being cleared — nothing will ever settle).
+    _releaseMask(settled) {
+      if (
+        !this._swapGen &&
+        !this._loadPending &&
+        (settled || this._img.complete)
+      ) {
+        this.removeAttribute('data-swapping');
+      }
     }
 
     // Baseline geometry, shared by clamp/apply/resize. `base` is the scale at
@@ -980,16 +1095,45 @@
       );
       this.toggleAttribute('data-attribution-error', attrError);
       if (url && !attrError) {
-        if (this._img.getAttribute('src') !== url) {
+        const prev = this._img.getAttribute('src');
+        if (prev !== url) {
+          // Replacing an already-shown image: mark the swap BEFORE setting
+          // src so the stale frame is never revealed (see the data-swapping
+          // stylesheet rules). First fill (prev empty) keeps the existing
+          // placeholder-until-load behavior — no spinner. _hidShowing
+          // covers the pick path's transient attribution-error wipe: prev
+          // is gone, but an image WAS showing, so this is a replacement.
+          if (prev || this._hidShowing) this.setAttribute('data-swapping', '');
+          // Mark the swap BEFORE assigning src: complete keeps reporting
+          // the old settled request until the browser's
+          // update-the-image-data microtask runs, so same-task re-renders
+          // (the pick path's credit/credit-href setAttributes) need this
+          // flag, not complete, to know a load is in flight.
+          this._loadPending = true;
           this._img.src = url;
           this._ghost.src = url;
+        } else {
+          // Same-src re-render — release if settled, so an ingest-set
+          // spinner can't stick after a byte-identical re-upload (same
+          // data URL, no further load event ever fires).
+          this._releaseMask();
         }
+        this._hidShowing = false;
         this._img.style.display = 'block';
         this._empty.style.display = 'none';
         this.setAttribute('data-filled', '');
         this._clampView();
         this._applyView();
       } else {
+        this.removeAttribute('data-swapping');
+        // The src is being removed — no load/error will ever fire for it.
+        this._loadPending = false;
+        // A transient attribution-error wipe of a showing image happens on
+        // the pick path: the host sets src one setAttribute before credit,
+        // so render N hides the old image (attrError) and render N+1
+        // restores a URL. Remember the wipe so that restore renders as a
+        // replacement (spinner), not a first fill (blank frame).
+        this._hidShowing = attrError && !!this._img.getAttribute('src');
         this._img.style.display = 'none';
         this._img.removeAttribute('src');
         this._ghost.removeAttribute('src');
