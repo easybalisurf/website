@@ -116,8 +116,8 @@ class Component extends DCLogic {
       swellSegs: (t.swellBody || []).map(seg => ({ ...seg, style: this.segStyle(seg) })),
       seasonDrySegs: (t.seasonDry || []).map(seg => ({ ...seg, style: this.segStyle(seg) })),
       seasonWetSegs: (t.seasonWet || []).map(seg => ({ ...seg, style: this.segStyle(seg) })),
-      backHref: 'Bali Surf Booking.dc.html?lang=' + lang,
-      ctaHref: 'Bali Surf Booking.dc.html?lang=' + lang + '#forecast',
+      backHref: 'index.html?lang=' + lang,
+      ctaHref: 'index.html?lang=' + lang + '#forecast',
     };
   }
 }
