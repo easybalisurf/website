@@ -1,11 +1,14 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">
   <defs>
-    <linearGradient id="g" x1="4" y1="46" x2="60" y2="46" gradientUnits="userSpaceOnUse">
+    <linearGradient id="e" x1="32" y1="9" x2="32" y2="55" gradientUnits="userSpaceOnUse">
       <stop offset="0" stop-color="#1FB6A6"></stop>
-      <stop offset="1" stop-color="#0E8C9E"></stop>
+      <stop offset="1" stop-color="#0E7C8C"></stop>
     </linearGradient>
   </defs>
-  <circle cx="46" cy="18" r="8" fill="#F4B740"></circle>
-  <path d="M4 34 Q14 24 24 34 T44 34 T64 34" fill="none" stroke="url(#g)" stroke-width="6" stroke-linecap="round"></path>
-  <path d="M4 48 Q14 38 24 48 T44 48 T64 48" fill="none" stroke="url(#g)" stroke-width="6" stroke-linecap="round"></path>
+  <g fill="url(#e)">
+    <rect x="16" y="9" width="11" height="46" rx="2.5"></rect>
+    <rect x="16" y="9" width="33" height="11" rx="2.5"></rect>
+    <rect x="16" y="30.5" width="27" height="10" rx="2.5"></rect>
+    <rect x="16" y="44" width="33" height="11" rx="2.5"></rect>
+  </g>
 </svg>
