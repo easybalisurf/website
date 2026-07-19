@@ -302,7 +302,7 @@
 
       <div style="display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-top:22px;padding-top:20px;border-top:1px solid rgba(255,255,255,.1)">
         <p style="font-size:12px;line-height:1.5;color:#FFFFFF99;margin:0;max-width:44ch">{{ t.smart.disclaimer }}</p>
-        <button type="button" onClick="{{ bookThis }}" style="flex:none;background:linear-gradient(120deg,#7DFFC4,#61FFD0 42%,#3FD9E6);color:#08100d;font-weight:600;font-size:15px;padding:14px 26px;border:none;border-radius:100px;cursor:pointer;transition:transform .2s,box-shadow .2s" style-hover="box-shadow:0 10px 34px rgba(97,255,208,.4);transform:translateY(-1px)">{{ t.smart.bookBtn }}</button>
+        <button type="button" onClick="{{ bookThis }}" style="flex:none;background:linear-gradient(120deg,#7DFFC4,#61FFD0 42%,#3FD9E6);color:#08100d;font-weight:600;font-size:15px;padding:14px 26px;border:none;border-radius:100px;cursor:pointer;transition:transform .2s,box-shadow .2s" style-hover="box-shadow:0 10px 34px rgba(97,255,208,.4);transform:translateY(-1px)">{{ reco.bookLabel }}</button>
       </div>
     </div>
    </div>
@@ -383,7 +383,7 @@
     <h2 style="{{ h2Style }};text-align:center;margin:12px auto 48px">{{ t.faq.h2 }}</h2>
     <div style="display:flex;flex-direction:column;gap:14px">
       <sc-for list="{{ faqs }}" as="q" hint-placeholder-count="5">
-        <div style="border:1px solid rgba(255,255,255,.14);border-radius:16px;background:rgba(255,255,255,.045);backdrop-filter:blur(13px) saturate(150%);-webkit-backdrop-filter:blur(13px) saturate(150%);box-shadow:inset 0 1px 0 rgba(255,255,255,.12);overflow:hidden">
+        <div style="border:1px solid rgba(255,255,255,.14);border-radius:16px;background:rgba(255,255,255,.045);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);box-shadow:inset 0 1px 0 rgba(255,255,255,.12);overflow:hidden">
           <button onClick="{{ q.toggle }}" style="width:100%;display:flex;align-items:center;justify-content:space-between;gap:20px;background:transparent;border:none;cursor:pointer;text-align:left;padding:24px 26px;color:#fff;font-family:'Antonio',sans-serif;font-weight:600;font-size:20px;line-height:1.15">
             {{ q.question }}
             <span style="{{ q.iconStyle }}">+</span>
@@ -467,7 +467,7 @@
             </div>
             <sc-if value="{{ showCoachNote }}" hint-placeholder-val="{{ true }}">
               <div style="display:flex;align-items:flex-start;gap:8px;margin-top:12px;font-size:13px;line-height:1.5;color:#61FFD0">
-                <span style="flex:none;font-size:14px">🏄</span><span>{{ t.book.sessionsCoachNote }}</span>
+                <span>{{ t.book.sessionsCoachNote }}</span>
               </div>
             </sc-if>
             <div style="display:flex;flex-direction:column;gap:14px;margin-top:16px">
@@ -679,7 +679,7 @@
             </div>
             <div style="display:flex;gap:12px;margin-top:20px">
               <button type="button" onClick="{{ back }}" style="{{ backBtn }}">{{ w.back }}</button>
-              <button type="submit" style="{{ nextBtn }}">{{ t.book.submit }}</button>
+              <button type="submit" style="{{ nextBtn }}">{{ submitLabel }}</button>
             </div>
             <p style="font-size:12px;text-align:center;margin:14px 0 0;color:#FFFFFF80">{{ t.book.fineA }}<a href="{{ termsHref }}" style="color:#61FFD0">{{ t.book.fineLink }}</a>{{ t.book.fineB }}</p>
           </div>
@@ -1129,24 +1129,25 @@ class Component extends DCLogic {
     const word = 'EASYBALI.SURF';
     const gradLen = word.indexOf('.') + 1; // gradient covers "EASYBALI." — ".SURF" renders white
     const n = Math.max(1, gradLen - 1);
+    // Fully static logo. The yellow sun-dot sits in its normal "easybali.surf" position on the
+    // baseline between BALI and SURF; the SURF letters are frozen mid wave-start (a swell rising
+    // to a crest at R) — motion implied, nothing animates or re-renders.
+    const waveY = { 9: -0.05, 10: -0.11, 11: -0.14, 12: -0.11 }; // S U R F — smooth swell cresting at R
+    const waveR = { 9: 2.5, 10: 2.5, 11: 0, 12: -2.5 };          // gentle tilt follows the wave slope
     return [...word].map((ch, i) => {
-      const delay = ';animation-delay:' + (i * 0.09).toFixed(2) + 's';
       const color = (i < gradLen ? this.logoGradientColor(i/n) : '#ffffff');
       if (ch === '.') {
-        // The dot sits ABOVE the preceding "I" so "I." reads as a lowercase "i" (a little sun above
-        // the stroke). It takes no horizontal room (negative margins) so "I" butts up against "S".
-        const sun = 'display:inline-block;position:relative;top:-0.09em;left:-0.25em;width:0.17em;height:0.17em;border-radius:50%'
-          + ';background:#FFD668;vertical-align:baseline;animation:none'
-          + ';margin:0 -0.09em 0 0';
+        const sun = 'display:inline-block;align-self:flex-end;width:0.16em;height:0.16em;border-radius:50%;background:#FFD668;margin:0 0.04em 0.08em;animation:none';
         return { ch: '', style: sun, navStyle: sun + ';transition:opacity .35s', footStyle: sun };
       }
+      const lift = waveY[i] ? ';transform:translateY(' + waveY[i] + 'em) rotate(' + waveR[i] + 'deg)' : '';
+      const st = 'color:' + color + ';animation:none' + lift;
       return {
         ch: ch === ' ' ? '\u00A0' : ch,
-        style: 'color:' + color + delay,
+        style: st,
         // Logo keeps its brand color everywhere — only nav links/burger flip to dark ink over light sections.
-        navStyle: 'color:' + color + delay + ';transition:color .35s',
-        // Footer: same brand gradient on EASYBALI, white on SURF (matches nav).
-        footStyle: 'color:' + color + ';animation:none'
+        navStyle: st + ';transition:color .35s',
+        footStyle: st
       };
     });
   }
@@ -1178,8 +1179,9 @@ class Component extends DCLogic {
           const idx = i++;
           // Stagger the swing so a single crest travels left→right through the whole
           // title over ~1.4s, then all letters rest flat for the remainder of the 9s cycle.
-          const delay = (idx * 0.08).toFixed(3);
-          return { ch: c.ch, style: 'color:' + c.color + ';display:inline-block;transform-origin:center bottom;animation-delay:-' + delay + 's' };
+          // First crest starts at 3s — right as the reader reaches "waves." — then loops on the 9s cycle.
+          const delay = (3 + idx * 0.08).toFixed(3);
+          return { ch: c.ch, style: 'color:' + c.color + ';display:inline-block;transform-origin:center bottom;animation-delay:' + delay + 's' };
         })
       };
     });
@@ -1203,6 +1205,7 @@ class Component extends DCLogic {
     const spotSeed = (() => { let h = 0; const n = active.name; for (let i = 0; i < n.length; i++) h = (h * 31 + n.charCodeAt(i)) >>> 0; return h; })();
     const weekStart = this.todayStr();
     const targetDate = /^\d{4}-\d{2}-\d{2}$/.test(dateStr) ? dateStr : weekStart;
+    const dateBlocked = !!(window.SERVICES_DATA.isDateBlocked && window.SERVICES_DATA.isDateBlocked(sportKey, targetDate));
 
     const liveDay = (date) => {
       if (!(wx && wx.marine && wx.wind)) return null;
@@ -1307,7 +1310,8 @@ class Component extends DCLogic {
 
     return {
       active, primary, week, conds,
-      noSlots: slots.length === 0, noWinMsg: sm.noWin,
+      noSlots: slots.length === 0 || dateBlocked, noWinMsg: dateBlocked ? (sm.dateBlocked || sm.noWin) : sm.noWin,
+      bookLabel: (() => { const dp2 = targetDate.split('-').map(Number); const dl = new Date(Date.UTC(dp2[0], dp2[1] - 1, dp2[2])).toLocaleDateString(locale, { day: 'numeric', month: 'short', timeZone: 'UTC' }); return chosenSlot ? (sm.bookDate || 'Book {date}').replace('{date}', dl) : (sm.pickSlot || 'Select a time slot'); })(),
       spots: pool.map(s => ({ name: s.name, style: spotChip(active.name === s.name), pick: () => this.setEx('spot', s.name) })),
       slots: slots.map(s => ({ ...s, style: slotRow(chosenSlot === s.time), pick: () => this.setState(st => ({ explore: { ...st.explore, slot: s.time, spot: st.explore.spot || active.name } })) }))
     };
@@ -1357,8 +1361,8 @@ class Component extends DCLogic {
     const footHead = "font-size:12px;letter-spacing:.6px;text-transform:uppercase;color:#61FFD0;margin-bottom:16px;font-weight:600";
     const footLink = "display:block;font-size:14px;color:#FFFFFFBD;margin-bottom:11px;transition:color .2s;width:max-content";
 
-    const glassCard = "background:linear-gradient(180deg,rgba(255,255,255,.13),rgba(255,255,255,.06));backdrop-filter:blur(14px) saturate(140%);-webkit-backdrop-filter:blur(14px) saturate(140%);border:1px solid rgba(255,255,255,.16);box-shadow:0 20px 60px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.22)";
-    const glassPanel = "background:linear-gradient(180deg,rgba(255,255,255,.10),rgba(255,255,255,.045));backdrop-filter:blur(14px) saturate(140%);-webkit-backdrop-filter:blur(14px) saturate(140%);border:1px solid rgba(255,255,255,.14);border-radius:18px;box-shadow:0 10px 40px rgba(0,0,0,.3),inset 0 1px 0 rgba(255,255,255,.18)";
+    const glassCard = "background:linear-gradient(180deg,rgba(255,255,255,.13),rgba(255,255,255,.06));backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,.16);box-shadow:0 20px 60px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.22)";
+    const glassPanel = "background:linear-gradient(180deg,rgba(255,255,255,.10),rgba(255,255,255,.045));backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,.14);border-radius:18px;box-shadow:0 10px 40px rgba(0,0,0,.3),inset 0 1px 0 rgba(255,255,255,.18)";
 
     const CERT_BADGES = [
       { name: 'ISA', full: 'International Surfing Association' },
@@ -1533,7 +1537,7 @@ class Component extends DCLogic {
 
       toggleMenu: () => this.setState(s => ({ menuOpen: !s.menuOpen })),
       closeMenu: () => this.setState({ menuOpen: false }),
-      drawerStyle: "position:fixed;inset:0;z-index:65;background:rgba(9,44,60,.97);backdrop-filter:blur(14px) saturate(140%);-webkit-backdrop-filter:blur(14px) saturate(140%);display:flex;align-items:center;justify-content:center;transition:opacity .3s,visibility .3s;opacity:" + (this.state.menuOpen ? '1' : '0') + ";visibility:" + (this.state.menuOpen ? 'visible' : 'hidden'),
+      drawerStyle: "position:fixed;inset:0;z-index:65;background:rgba(9,44,60,.97);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;transition:opacity .3s,visibility .3s;opacity:" + (this.state.menuOpen ? '1' : '0') + ";visibility:" + (this.state.menuOpen ? 'visible' : 'hidden'),
       drawerLink: "font-family:'Antonio',sans-serif;font-weight:600;font-size:30px;color:#fff;padding:12px 0;border-bottom:1px solid rgba(255,255,255,.08);transition:color .2s,opacity .35s ease,transform .35s ease",
       drawerLink0: "font-family:'Antonio',sans-serif;font-weight:600;font-size:30px;color:#fff;padding:12px 0;border-bottom:1px solid rgba(255,255,255,.08);transition:color .2s,opacity .35s ease,transform .35s ease;transition-delay:" + (this.state.menuOpen ? '.05s' : '0s') + ";opacity:" + (this.state.menuOpen ? '1' : '0') + ";transform:translateY(" + (this.state.menuOpen ? '0' : '10px') + ")",
       drawerLink1: "font-family:'Antonio',sans-serif;font-weight:600;font-size:30px;color:#fff;padding:12px 0;border-bottom:1px solid rgba(255,255,255,.08);transition:color .2s,opacity .35s ease,transform .35s ease;transition-delay:" + (this.state.menuOpen ? '.1s' : '0s') + ";opacity:" + (this.state.menuOpen ? '1' : '0') + ";transform:translateY(" + (this.state.menuOpen ? '0' : '10px') + ")",
@@ -1607,6 +1611,11 @@ class Component extends DCLogic {
           }
           if (missing >= 0) { this.setState(s => ({ touched: { ...s.touched, dateAt: { ...(s.touched.dateAt||{}), [missing]: true } } })); return; }
           if (missingSlot >= 0) { this.setState(s => ({ touched: { ...s.touched, slotAt: { ...(s.touched.slotAt||{}), [missingSlot]: true } } })); return; }
+          let blockedIdx = -1;
+          for (let i = 0; i < sessionsCount; i++) {
+            if (rows[i] && rows[i].date && SVC.isDateBlocked && SVC.isDateBlocked(discKey, rows[i].date)) { blockedIdx = i; break; }
+          }
+          if (blockedIdx >= 0) { this.setState(s => ({ touched: { ...s.touched, dateAt: { ...(s.touched.dateAt||{}), [blockedIdx]: true } } })); return; }
         }
         this.gotoStep(Math.min(3, this.state.step + 1));
       },
@@ -1653,6 +1662,7 @@ class Component extends DCLogic {
       tbPrice: ad.transferBack ? (this.state.transferBackFrom ? '$' + tbOne + ' · ~' + this.transferEtaMin(this.state.transferBackFrom, destName) + ' ' + (W.minAbbr || 'min') : '—') : '',
       summary, orderTotal: '$' + totalNum,
       depositDue: '$' + Math.round(baseNum * 0.2),
+      submitLabel: (L.book.submit || 'Pay {dep} & book').replace('{dep}', '$' + Math.round(baseNum * 0.2)),
       depositLabel: (L.book.sessionDeposit || 'Deposit due (20% of session price)'),
       // Live USD→IDR rate (fetched in componentDidMount, cached 6h) — falls back to ~18,000 until it resolves.
       remainderLabel: L.book.remainderLabel || 'Balance paid locally (approx.)',
@@ -1677,7 +1687,10 @@ class Component extends DCLogic {
         const activeSessions = sessions.slice(0, sessionsCount);
         return activeSessions.map((row, i) => {
           const touchedRow = !!(this.state.touched.dateAt || {})[i];
+          const dateBlocked = !!(row.date && SVC.isDateBlocked && SVC.isDateBlocked(discKey, row.date));
           const err = touchedRow && !row.date;
+          const dateMsg = err ? (W.errDate || 'Please choose a date') : (dateBlocked ? (W.errBlocked || 'This date is unavailable — please choose another') : '');
+          const dateBad = err || dateBlocked;
           const touchedSlot = !!(this.state.touched.slotAt || {})[i];
           const slotErr = touchedSlot && !row.slot;
           return {
@@ -1686,8 +1699,8 @@ class Component extends DCLogic {
             date: row.date, slot: row.slot, minDate: bali.dateStr,
             onDate: e => { this.setSessionField(i, 'date', e.target.value); this.setState(s => ({ touched: { ...s.touched, dateAt: { ...(s.touched.dateAt||{}), [i]: true } } })); },
             onSlot: e => { this.setSessionField(i, 'slot', e.target.value); this.setState(s => ({ touched: { ...s.touched, slotAt: { ...(s.touched.slotAt||{}), [i]: true } } })); },
-            err: err ? (W.errDate || 'Please choose a date') : '',
-            dateInputStyle: dateInputBase + (err ? ';border-color:#FFB454' : ''),
+            err: dateMsg,
+            dateInputStyle: dateInputBase + (dateBad ? ';border-color:#FFB454' : ''),
             slotErr: slotErr ? (W.errSlot || 'Please choose a time window') : '',
             slotSelectStyle: selectStyle + (slotErr ? ';border-color:#FFB454;background:rgba(255,180,84,.07)' : ''),
             slotOptions: SLOTS.map(o => ({
